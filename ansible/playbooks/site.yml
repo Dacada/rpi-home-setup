@@ -1,0 +1,56 @@
+---
+- hosts: all
+  gather_facts: false  # Disable fact gathering until the key is set
+  vars_files:
+    - ../vars/secrets.yml
+  tasks:
+    - name: Write automation private key to /tmp
+      copy:
+        content: "{{ ssh_keys.automation.private_key }}"
+        dest: "/tmp/automation_private_key"
+        mode: '0600'
+      delegate_to: localhost
+      run_once: true
+
+    - name: Set ansible_ssh_private_key_file
+      set_fact:
+        ansible_ssh_private_key_file: "/tmp/automation_private_key"
+
+- hosts: bastion
+  become: true
+  vars:
+    identity_ssh_key: "{{ ssh_keys.bastion.private_key }}"
+    ansible_user: dacada
+    ansible_python_interpreter: /usr/bin/python3
+  vars_files:
+    - ../vars/secrets.yml
+  roles:
+    - common
+    - bastion
+    - ups
+    - ca_access
+
+- hosts: pihole
+  become: true
+  vars:
+    identity_ssh_key: "{{ ssh_keys.pihole.private_key }}"
+    ansible_user: dacada
+    ansible_python_interpreter: /usr/bin/python3
+  vars_files:
+    - ../vars/secrets.yml
+  roles:
+    - common
+    - pihole
+
+- hosts: fileserver
+  become: true
+  vars:
+    identity_ssh_key: "{{ ssh_keys.fileserver.private_key }}"
+    ansible_user: dacada
+    ansible_python_interpreter: /usr/bin/python3
+  vars_files:
+    - ../vars/secrets.yml
+  roles:
+    - common
+    - fileserver
+    - ca_access

@@ -1,0 +1,50 @@
+---
+- name: Ensure .ssh directory exists
+  file:
+    path: /home/{{ ansible_user }}/.ssh
+    state: directory
+    mode: '0700'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+
+- name: Install SSH key for host identity
+  ansible.builtin.copy:
+    dest: /home/{{ ansible_user }}/.ssh/id_rsa
+    content: "{{ identity_ssh_key }}"
+    mode: '0600'
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+  notify: Restart SSH
+
+- name: Add bastion's public key to authorized_keys
+  authorized_key:
+    user: "{{ ansible_user }}"
+    state: present
+    key: "{{ ssh_keys.bastion.public_key }}"
+
+- name: Ensure system is up to date
+  apt:
+    update_cache: yes
+    upgrade: dist
+    autoremove: yes
+
+- name: Ensure syslog is installed
+  apt:
+    name: rsyslog
+    state: present
+
+- name: Configure RAM-based logging
+  copy:
+    dest: /etc/systemd/journald.conf
+    content: |
+      [Journal]
+      Storage=volatile
+      RuntimeMaxUse=30M
+      MaxFileSec=1week
+      SystemMaxUse=50M
+  notify: Restart journald
+
+- name: Clear old logs
+  ansible.builtin.command:
+    cmd: journalctl --vacuum-size=50M
+  ignore_errors: true

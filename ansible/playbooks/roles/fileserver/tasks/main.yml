@@ -1,0 +1,19 @@
+- name: Check if /mnt/logs is mounted
+  command: mountpoint /mnt/logs
+  register: logs_mount_check
+  ignore_errors: yes
+
+- name: Fail if /mnt/logs is not mounted
+  fail:
+    msg: "/mnt/logs is not mounted. Please mount it manually and ensure it's in /etc/fstab."
+  when: logs_mount_check.rc != 0
+
+- name: Check if /mnt/files is mounted
+  command: mountpoint /mnt/files
+  register: files_mount_check
+  ignore_errors: yes
+
+- name: Fail if /mnt/files is not mounted
+  fail:
+    msg: "/mnt/files is not mounted. Please mount it manually and ensure it's in /etc/fstab."
+  when: files_mount_check.rc != 0

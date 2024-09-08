@@ -1,0 +1,31 @@
+#!/bin/bash
+# {{ ansible_managed }}
+
+# Custom shutdown script initiated by APCUPSD
+WALL=/usr/bin/wall
+LOGFILE="/var/log/apcupsd.log"
+DEVICES=("192.168.1.72" "192.168.1.103")  # Add your device IPs here
+
+# Notify all users that shutdown is initiated
+echo "Shutdown initiated by apcupsd!" | ${WALL}
+echo "$(date) - Shutdown initiated by apcupsd" >> $LOGFILE
+
+# Loop through devices and issue shutdown
+for device in "${DEVICES[@]}"; do
+  echo "$(date) - Issuing shutdown command to $device" >> $LOGFILE
+  ssh dacada@$device "sudo /sbin/shutdown -h now"
+
+  # Log success or failure for each device
+  if [ $? -eq 0 ]; then
+    echo "$(date) - Successfully issued shutdown to $device" >> $LOGFILE
+  else
+    echo "$(date) - Failed to issue shutdown to $device" >> $LOGFILE
+  fi
+done
+
+# Final notification to users: bastion is shutting down
+echo "Shutting down this machine!" | ${WALL}
+echo "$(date) - Shutting down bastion (this machine)" >> $LOGFILE
+
+# Shutdown the bastion itself
+shutdown now

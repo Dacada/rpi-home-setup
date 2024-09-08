@@ -1,0 +1,15 @@
+- name: Install the CA public key on the device
+  copy:
+    content: "{{ ssh_keys.bastion.ca_public_key }}"
+    dest: /etc/ssh/bastion_ca.pub
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Configure SSH to trust the CA
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?TrustedUserCAKeys'
+    line: 'TrustedUserCAKeys /etc/ssh/bastion_ca.pub'
+    state: present
+  notify: Restart SSH

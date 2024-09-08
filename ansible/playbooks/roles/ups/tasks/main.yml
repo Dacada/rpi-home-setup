@@ -1,0 +1,30 @@
+---
+- name: Install apcupsd
+  apt:
+    name: apcupsd
+    state: present
+    update_cache: yes
+
+- name: Deploy the apcupsd configuration
+  template:
+    src: apcupsd.conf.j2
+    dest: /etc/apcupsd/apcupsd.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart apcupsd
+
+- name: Deploy custom shutdown script for APCUPSD
+  template:
+    src: "doshutdown.j2"
+    dest: "/etc/apcupsd/doshutdown"
+    owner: root
+    group: root
+    mode: '0755'
+  notify: Restart apcupsd
+
+- name: Ensure apcupsd is enabled and running
+  service:
+    name: apcupsd
+    state: started
+    enabled: yes

@@ -1,0 +1,3 @@
+ups_battery_level: 50  # Shutdown when battery level falls below 50%
+ups_minutes: 5         # Shutdown when less than 5 minutes of battery remaining
+ups_timeout: 30        # Automatically shutdown after 30 minutes on battery

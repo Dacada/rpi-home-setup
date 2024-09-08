@@ -1,0 +1,34 @@
+---
+- name: Install fail2ban
+  apt:
+    name: fail2ban
+    state: present
+
+- name: Configure fail2ban for sshd
+  copy:
+    dest: /etc/fail2ban/jail.local
+    content: |
+      [sshd]
+      enabled = true
+      port = ssh
+      filter = sshd
+      logpath = /var/log/auth.log
+      maxretry = 3
+  notify: Restart fail2ban
+
+- name: Minimize fail2ban logging
+  copy:
+    dest: /etc/fail2ban/fail2ban.local
+    content: |
+      [Definition]
+      loglevel = ERROR
+      logtarget = /dev/null
+  notify: Restart fail2ban
+
+- name: Harden SSH Configuration
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PermitRootLogin'
+    line: 'PermitRootLogin no'
+    backup: yes
+  notify: Restart SSH

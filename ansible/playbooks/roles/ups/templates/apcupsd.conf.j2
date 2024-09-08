@@ -1,0 +1,15 @@
+## apcupsd.conf v1.1 ##
+# {{ ansible_managed }}
+UPSCABLE usb
+UPSTYPE usb
+DEVICE
+
+LOCKFILE /var/lock
+UPSCLASS standalone
+UPSMODE disable
+
+BATTERYLEVEL {{ ups_battery_level | default(10) }}
+MINUTES {{ ups_minutes | default(5) }}
+TIMEOUT {{ ups_timeout | default(0) }}
+
+STATTIME 0
