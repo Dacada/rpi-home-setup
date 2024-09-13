@@ -26,9 +26,9 @@
     - ../vars/secrets.yml
   roles:
     - common
+    - ca_access
     - bastion
     - ups
-    - ca_access
 
 - hosts: pihole
   become: true
@@ -40,6 +40,7 @@
     - ../vars/secrets.yml
   roles:
     - common
+    - ca_access
     - pihole
 
 - hosts: fileserver
@@ -52,5 +53,5 @@
     - ../vars/secrets.yml
   roles:
     - common
-    - fileserver
     - ca_access
+    - fileserver

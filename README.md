@@ -33,21 +33,19 @@ ip=192.168.1.XXX::192.168.1.1:255.255.255.0::eth0:off
 
 # Trusting keys for the bastion
 
-I am a lazy man. I don't want to copy over a new key each time I need to let a new device into the bastion. Instead, we're using **Certificate Authorities**. Within the `secrets.yml` file in this repository we have the key pair for the CA. To let a new device into the bastion, simply sign its public key using the CA's private key.
+I am a lazy man. I don't want to copy over a new key each time I need to let a new device into each of my devices. Instead, we're using a **Certificate Authority**. Within the `secrets.yml` file in the fileserver we have the key pair for the CA. To let a new device into the bastion, simply sign its public key using the CA's private key.
 
 ```
-ssh-keygen -s bastion_ca -I "Some description" -n dacada -V +3550w device.pub
+ssh-keygen -s ca -I "Some description" -n dacada -V +3550w device.pub
 ```
 
-This uses `bastion_ca`, a private key, to sign `device.pub`, a device's public key. The signature expires after around 70 years. What if a key is compromised?
+This uses `ca`, a private key, to sign `device.pub`, a device's public key. The signature expires after around 70 years. What if a key is compromised?
 
-1. We replace the CA in `secrets.yml` with a new one (generated like any other key pair, `ssh-keygen -t rsa -b 4096 -f bastion_ca`)
+1. We replace the CA in `secrets.yml` with a new one (generated like any other key pair, `ssh-keygen -t rsa -b 4096 -f ca`)
 2. We run ansible to make the replacement effective.
 3. We go and re-sign every other key.
 
 This is a huge pain. But the way I use keys, they are unlikely to be compromised. This also means I need to be sure to replace keys if they become cryptographically insecure. Which is also something that shouldn't happen often.
-
-The fileserver trusts the same keys (has the same CA installed). But only for the LAN.
 
 In this same repository there is a sample ssh configuration for connecting to the devices from both the LAN and the internet (WAN).
 
@@ -107,7 +105,6 @@ These are the steps to manually set up a new SSD:
 
 In this order:
 
-- Set up the pihole on ansible
 - Add script to refresh dynamoc DNS to bastion
 - Centralize logging to fileserver
 - Set up automatic updates

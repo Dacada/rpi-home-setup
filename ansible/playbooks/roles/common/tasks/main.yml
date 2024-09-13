@@ -16,12 +16,6 @@
     group: "{{ ansible_user }}"
   notify: Restart SSH
 
-- name: Add bastion's public key to authorized_keys
-  authorized_key:
-    user: "{{ ansible_user }}"
-    state: present
-    key: "{{ ssh_keys.bastion.public_key }}"
-
 - name: Ensure system is up to date
   apt:
     update_cache: yes
