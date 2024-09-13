@@ -49,6 +49,8 @@ This is a huge pain. But the way I use keys, they are unlikely to be compromised
 
 The fileserver trusts the same keys (has the same CA installed). But only for the LAN.
 
+In this same repository there is a sample ssh configuration for connecting to the devices from both the LAN and the internet (WAN).
+
 # Manually formatting the SSD
 
 I didn't want to have Ansible automatically reformat the SSD if it can't detect it. Sounds a bit too dangerous. Instead, if it can't find the expected mountpoints it will fail loudly. And point you to the README. Here!
@@ -105,8 +107,8 @@ These are the steps to manually set up a new SSD:
 
 In this order:
 
-- Add the ssh config here (after ive tested it)
 - Set up the pihole on ansible
+- Add script to refresh dynamoc DNS to bastion
 - Centralize logging to fileserver
 - Set up automatic updates
 - Set up monitoring
