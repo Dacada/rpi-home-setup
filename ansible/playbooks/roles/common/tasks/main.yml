@@ -16,6 +16,12 @@
     group: "{{ ansible_user }}"
   notify: Restart SSH
 
+- name: Add bastion's public key to authorized_keys
+  authorized_key:
+    user: "{{ ansible_user }}"
+    state: present
+    key: "{{ ssh_keys.bastion.public_key }}"
+
 - name: Ensure system is up to date
   apt:
     update_cache: yes
@@ -37,8 +43,3 @@
       MaxFileSec=1week
       SystemMaxUse=50M
   notify: Restart journald
-
-- name: Clear old logs
-  ansible.builtin.command:
-    cmd: journalctl --vacuum-size=50M
-  ignore_errors: true
