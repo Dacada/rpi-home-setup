@@ -2,6 +2,7 @@
   command: mountpoint /mnt/logs
   register: logs_mount_check
   ignore_errors: yes
+  changed_when: false
 
 - name: Fail if /mnt/logs is not mounted
   fail:
@@ -12,8 +13,16 @@
   command: mountpoint /mnt/files
   register: files_mount_check
   ignore_errors: yes
+  changed_when: false
 
 - name: Fail if /mnt/files is not mounted
   fail:
     msg: "/mnt/files is not mounted. Please mount it manually and ensure it's in /etc/fstab."
   when: files_mount_check.rc != 0
+
+- name: Set default sftp directory
+  replace:
+    path: /etc/ssh/sshd_config
+    regexp: '^(Subsystem\s+sftp(?!.*-d /mnt/files).*)$'
+    replace: '\1 -d /mnt/files'
+  notify: Restart SSH
