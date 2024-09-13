@@ -14,7 +14,7 @@ The Raspberry Pi need some initial manual configuration.
      - fileserver
    - A username (dacada) and password (check password manager, different for each device)
    - The right locale and keyboard layout (just in case we need to actually physically log in)
-   - Enable ssh with the appropriate public key (check the ansible vault in this repository). The format of the input
+   - Enable ssh with the appropriate public key (check the ansible vault in the fileserver). The format of the input
      should be: `from="192.168.1.0/24" THE KEY HERE`. That option at the start may make it just slightly more secure?
    - Disable telemetry
 3. Configure in a static IP address. Mount /dev/sdX1 and edit cmdline.txt to put the following at the end:
@@ -29,9 +29,10 @@ ip=192.168.1.XXX::192.168.1.1:255.255.255.0::eth0:off
 | pihole     | 192.168.1.72  |
 | fileserver | 192.168.1.103 |
 +------------+---------------+
-4. Run Ansible: `ansible-playbook -i ansible/inventories/hosts ansible/playbooks/site.yml --ask-vault-pass` (the password is, of course, in your password manager)
+4. Ensure the ansible vault is in the correct path. Copy it over from the fileserver if needed (copy it to `ansible/vars/secrets.yml`). If it has been lost, you will need to create a new one! Check the section about creating a new ansible vault.
+5. Run Ansible: `ansible-playbook -i ansible/inventories/hosts ansible/playbooks/site.yml --ask-vault-pass` (the password is, of course, in your password manager)
 
-# Trusting keys for the bastion
+# Trusting keys
 
 I am a lazy man. I don't want to copy over a new key each time I need to let a new device into each of my devices. Instead, we're using a **Certificate Authority**. Within the `secrets.yml` file in the fileserver we have the key pair for the CA. To let a new device into the bastion, simply sign its public key using the CA's private key.
 
@@ -100,6 +101,45 @@ These are the steps to manually set up a new SSD:
     # echo "UUID=[UUID OF THE LOGS PARTITION] /mnt/logs ext4 defaults 0 2" >> /etc/fstab
     # echo "UUID=[UUID OF THE FILES PARTITION] /mnt/files ext4 defaults 0 2" >> /etc/fstab
    ```
+
+# Creating a new Ansible Vault
+
+Oopsie, we deleted the vault. To create a new one, first create the actual file: `ansible-vault create secrets.yml`. Then edit it `ansible-vault edit secrets.yml`. The password should be the one in your password manager.
+
+It should contain the following, organized like this:
+
+```yaml
+ssh_keys:
+  automation:
+    private_key: |
+      KEY HERE
+    public_key: |
+      KEY HERE
+  bastion:
+    private_key: |
+      KEY HERE
+    public_key: |
+      KEY HERE
+  ca:
+    private_key: |
+      KEY HERE
+    public_key: |
+      KEY HERE
+  pihole:
+    private_key: |
+      KEY HERE
+    public_key: |
+      KEY HERE
+  fileserver:
+    private_key: |
+      KEY HERE
+    public_key: |
+      KEY HERE
+```
+
+And then we just generate all these keys!
+
+You'll have to go and install the public automation key to every device (see above, in setup, for the format) and then run ansible to set up everything else. After that you'll have to re-sign the key on every device using the CA (see above, in Trusting Keys).
 
 # TODO
 
