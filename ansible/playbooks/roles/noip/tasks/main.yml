@@ -1,0 +1,115 @@
+---
+- name: Populate service facts
+  service_facts:
+
+- name: Install and setup no-ip duc
+  block:
+
+    - name: Download installation files
+      get_url:
+        url: "{{ noip_download_url }}"
+        dest: "{{ noip_download_dest }}"
+
+    - name: Create tmp directory for installation files
+      file:
+        path: "{{ noip_extract_dest }}"
+        state: directory
+        mode: '0755'
+
+    - name: Extract installation files
+      unarchive:
+        src: "{{ noip_download_dest }}"
+        dest: "{{ noip_extract_dest }}"
+        remote_src: yes
+
+    - name: Check if the no-ip duc is installed
+      stat:
+        path: "{{ noip_binary_dest }}"
+      register: noip_duc
+
+    - name: Install no-ip duc
+      block:
+
+        - name: Find deb file
+          find:
+            paths: "{{ noip_extract_dest }}"
+            patterns: noip-duc_*_arm64.deb
+            recurse: true
+          register: noip_deb
+
+        - name: Fail if no deb files found
+          fail:
+            msg: "No deb files match the pattern for noip installer"
+          when: noip_deb.matched == 0
+
+        - name: Fail if more than one deb file found
+          fail:
+            msg: "Too many deb files match the pattern for noip installer"
+          when: noip_deb.matched >= 2
+
+        - name: Install deb file
+          apt:
+            deb: "{{ noip_deb.files[0].path }}"
+
+      when: not noip_duc.stat.exists
+
+    - name: Check if service file exists
+      stat:
+        path: "{{ noip_systemd_service_dest }}"
+      register: service_file
+
+    - name: Copy over service file
+      block:
+
+        - name: Find service file
+          shell:
+            cmd: "ls {{ noip_extract_dest }}/*/debian/service"
+          register: noip_service_file
+          changed_when: false
+
+        - name: Copy the service file
+          command:
+            cmd: cp "{{ noip_service_file.stdout }}" "{{ noip_systemd_service_dest }}"
+            creates: "{{ noip_systemd_service_dest }}"
+
+      when: not service_file.stat.exists
+
+    - name: Check if the service config exists
+      stat:
+        path: "{{ noip_config_dest }}"
+      register: service_file_config
+
+    - name: Copy over service config
+      block:
+
+        - name: Ensure the directory exists
+          file:
+            path: "{{ noip_config_dest | dirname }}"
+            state: directory
+            mode: '0755'
+
+        - name: Create the service file config
+          template:
+            src: noip-duc.j2
+            dest: "{{ noip_config_dest }}"
+
+      when: not service_file_config.stat.exists
+
+    - name: Enable and start the service
+      block:
+
+        - name: Run daemon-reload
+          command:
+            cmd: systemctl daemon-reload
+
+        - name: Enable the service
+          systemd:
+            name: noip-duc
+            enabled: yes
+
+        - name: Start the service
+          systemd:
+            name: noip-duc
+            state: started
+
+  when: "'noip-duc.service' not in ansible_facts.services or ansible_facts.services['noip-duc.service'].state != 'running'"

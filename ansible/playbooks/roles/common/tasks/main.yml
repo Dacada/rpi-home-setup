@@ -8,7 +8,7 @@
     group: "{{ ansible_user }}"
 
 - name: Install SSH key for host identity
-  ansible.builtin.copy:
+  copy:
     dest: /home/{{ ansible_user }}/.ssh/id_rsa
     content: "{{ identity_ssh_key }}"
     mode: '0600'

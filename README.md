@@ -145,7 +145,6 @@ You'll have to go and install the public automation key to every device (see abo
 
 In this order:
 
-- Add script to refresh dynamoc DNS to bastion
 - Centralize logging to fileserver
 - Set up automatic updates
 - Set up monitoring

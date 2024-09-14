@@ -1,0 +1,6 @@
+noip_download_url: "https://www.noip.com/download/linux/latest"
+noip_download_dest: "/tmp/noip-duc.tar.gz"
+noip_extract_dest: "/tmp/noip-duc"
+noip_binary_dest: "/usr/bin/noip-duc"
+noip_systemd_service_dest: "/etc/systemd/system/noip-duc.service"
+noip_config_dest: "/etc/default/noip-duc"

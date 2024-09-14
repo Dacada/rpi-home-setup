@@ -29,6 +29,7 @@
     - ca_access
     - bastion
     - ups
+    - noip
 
 - hosts: pihole
   become: true
