@@ -16,15 +16,6 @@
       maxretry = 3
   notify: Restart fail2ban
 
-- name: Minimize fail2ban logging
-  copy:
-    dest: /etc/fail2ban/fail2ban.local
-    content: |
-      [Definition]
-      loglevel = ERROR
-      logtarget = /dev/null
-  notify: Restart fail2ban
-
 - name: Harden SSH Configuration
   lineinfile:
     path: /etc/ssh/sshd_config
@@ -32,3 +23,9 @@
     line: 'PermitRootLogin no'
     backup: yes
   notify: Restart SSH
+
+- name: Ensure fail2ban is enabled and running
+  service:
+    name: fail2ban
+    state: started
+    enabled: yes

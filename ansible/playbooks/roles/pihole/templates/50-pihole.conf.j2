@@ -1,0 +1,13 @@
+# Monitor /var/log/pihole.log (DNS queries and responses)
+input(type="imfile"
+      File="/var/log/pihole.log"
+      Tag="pihole-dns"
+      Severity="info"
+      Facility="local1")
+
+# Monitor /var/log/pihole-FTL.log (Pi-hole FTL logs)
+input(type="imfile"
+      File="/var/log/pihole-FTL.log"
+      Tag="pihole-ftl"
+      Severity="info"
+      Facility="local1")

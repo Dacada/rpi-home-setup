@@ -15,3 +15,12 @@
   fail:
     msg: "Pi-hole is not installed. Please run the following command on the Pi-hole device to install it: 'sudo bash /tmp/pihole_install.sh'"
   when: not pihole_installed.stat.exists
+
+- name: Configure rsyslog to monitor pihole logs
+  template:
+    src: "50-pihole.conf.j2"
+    dest: "/etc/rsyslog.d/50-pihole.conf"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart rsyslog

@@ -1,0 +1,11 @@
+---
+- name: Ensure rsyslog is installed
+  apt:
+    name: rsyslog
+    state: present
+
+- name: Copy rsyslog configuration
+  template:
+    src: rsyslog.conf.j2
+    dest: /etc/rsyslog.conf
+  notify: Restart rsyslog

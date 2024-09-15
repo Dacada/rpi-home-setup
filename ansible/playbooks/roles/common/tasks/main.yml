@@ -28,11 +28,7 @@
     upgrade: dist
     autoremove: yes
 
-- name: Ensure syslog is installed
-  apt:
-    name: rsyslog
-    state: present
-
+# Logs aren't persisted by journald, persistent logs are sent over the wire to the log server (if we have the logclient or logserver role)
 - name: Configure RAM-based logging
   copy:
     dest: /etc/systemd/journald.conf

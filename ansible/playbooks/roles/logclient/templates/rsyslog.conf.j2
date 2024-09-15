@@ -1,0 +1,52 @@
+# {{ ansible_managed }}
+
+#################
+#### MODULES ####
+#################
+
+module(load="imuxsock") # provides support for local system logging
+module(load="imklog")   # provides kernel logging support
+
+
+###########################
+#### GLOBAL DIRECTIVES ####
+###########################
+
+# Set the default permissions for all log files.
+$FileOwner root
+$FileGroup adm
+$FileCreateMode 0640
+$DirCreateMode 0755
+$Umask 0022
+
+# Where to place spool and state files
+$WorkDirectory /var/spool/rsyslog
+
+# Include all config files in /etc/rsyslog.d/
+$IncludeConfig /etc/rsyslog.d/*.conf
+
+###############
+#### RULES ####
+###############
+
+# Log format
+template(name="RemoteFormat" type="string" string="<%PRI%>%TIMESTAMP% %HOSTNAME% %syslogtag%%msg%\n")
+
+# Forward logs to the central log server
+*.* action(type="omfwd"
+           target="{{ log_server_ip }}"
+           port="514"
+           protocol="tcp"
+           template="RemoteFormat"
+           queue.type="direct"
+           queue.size="5000"
+           action.resumeRetryCount="-1")
+
+# Keep auth logs locally as well
+auth,authpriv.*	/var/log/auth.log
+
+# Keep kernel issues locally too
+kern.* /var/log/kern.log
+
+# Emergencies are also sent to everybody logged in.
+*.emerg				:omusrmsg:*

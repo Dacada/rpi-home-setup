@@ -1,0 +1,65 @@
+# {{ ansible_managed }}
+
+#################
+#### MODULES ####
+#################
+
+module(load="imuxsock") # provides support for local system logging
+module(load="imklog")   # provides kernel logging support
+
+# provides UDP syslog reception
+module(load="imudp")
+input(type="imudp" port="514")
+
+# provides TCP syslog reception
+module(load="imtcp")
+input(type="imtcp" port="514")
+
+
+###########################
+#### GLOBAL DIRECTIVES ####
+###########################
+
+# Set the default permissions for all log files.
+$FileOwner root
+$FileGroup adm
+$FileCreateMode 0640
+$DirCreateMode 0755
+$Umask 0022
+
+# Create directories as needed
+$CreateDirs on
+
+# Where to place spool and state files
+$WorkDirectory /var/spool/rsyslog
+
+# Include all config files in /etc/rsyslog.d/
+$IncludeConfig /etc/rsyslog.d/*.conf
+
+###############
+#### RULES ####
+###############
+
+# Template for dynamic log file path based on hostname and program name, with some "special" programs
+template(name="AnsibleLog" type="string" string="/mnt/logs/%HOSTNAME%/ansible.log")
+template(name="SystemdLog" type="string" string="/mnt/logs/%HOSTNAME%/systemd.log")
+template(name="AuthLog" type="string" string="/mnt/logs/%HOSTNAME%/auth.log")
+template(name="PerServiceLog" type="string" string="/mnt/logs/%HOSTNAME%/%PROGRAMNAME%.log")
+
+# Write logs per hostname and per service, with some logs going all to a single file
+if $programname contains 'ansible' then {
+    action(type="omfile" dynaFile="AnsibleLog")
+    stop
+}
+if $programname contains 'systemd' then {
+    action(type="omfile" dynaFile="SystemdLog")
+    stop
+}
+if $syslogfacility-text == 'auth' or $syslogfacility-text == 'authpriv' then {
+    action(type="omfile" dynaFile="AuthLog")
+    stop
+}
+*.* action(type="omfile" dynaFile="PerServiceLog")
+
+# Emergencies are also sent to everybody logged in.
+*.emerg				:omusrmsg:*

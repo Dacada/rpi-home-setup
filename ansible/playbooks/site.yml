@@ -30,6 +30,7 @@
     - bastion
     - ups
     - noip
+    - logclient
 
 - hosts: pihole
   become: true
@@ -43,6 +44,7 @@
     - common
     - ca_access
     - pihole
+    - logclient
 
 - hosts: fileserver
   become: true
@@ -56,3 +58,4 @@
     - common
     - ca_access
     - fileserver
+    - logserver  # ansible/playbooks/roles/logclient/defaults/main.yml needs to be updated if this changes
