@@ -1,0 +1,16 @@
+# {{ ansible_managed }}
+
+/var/log/auth.log
+/var/log/kern.log
+{
+    monthly
+    missingok
+    rotate 6
+    compress
+    delaycompress
+    notifempty
+    sharedscripts
+    postrotate
+        /usr/lib/rsyslog/rsyslog-rotate
+    endscript
+}

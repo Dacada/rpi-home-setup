@@ -1,0 +1,14 @@
+# {{ ansible_managed }}
+
+/mnt/logs/*/* {
+    monthly
+    missingok
+    rotate 6
+    compress
+    delaycompress
+    notifempty
+    sharedscripts
+    postrotate
+        /usr/lib/rsyslog/rsyslog-rotate
+    endscript
+}

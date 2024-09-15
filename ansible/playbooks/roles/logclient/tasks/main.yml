@@ -9,3 +9,21 @@
     src: rsyslog.conf.j2
     dest: /etc/rsyslog.conf
   notify: Restart rsyslog
+
+- name: Remove /var/log/kern.log entry from logrotate config
+  lineinfile:
+    path: /etc/logrotate.d/rsyslog
+    state: absent
+    regexp: '^/var/log/kern.log'
+
+- name: Remove /var/log/auth.log entry from logrotate config
+  lineinfile:
+    path: /etc/logrotate.d/rsyslog
+    state: absent
+    regexp: '^/var/log/auth.log'
+
+- name: Copy logrotate configuration (local file)
+  template:
+    src: logrotate-local-logs.j2
+    dest: /etc/logrotate.d/local-logs
+  notify: Restart logrotate

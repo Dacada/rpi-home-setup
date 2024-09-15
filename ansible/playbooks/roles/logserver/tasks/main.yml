@@ -9,3 +9,9 @@
     src: rsyslog.conf.j2
     dest: /etc/rsyslog.conf
   notify: Restart rsyslog
+
+- name: Copy logrotate configuration (remote file)
+  template:
+    src: logrotate-remote-logs.j2
+    dest: /etc/logrotate.d/remote-logs
+  notify: Restart logrotate

@@ -145,7 +145,6 @@ You'll have to go and install the public automation key to every device (see abo
 
 In this order:
 
-- Set up log rotation
 - Set up automatic updates
 - Set up monitoring
 - Set up and expose webserver on bastion with landing page that can reverse proxy to other devices
