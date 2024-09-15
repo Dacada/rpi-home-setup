@@ -16,6 +16,14 @@
       maxretry = 3
   notify: Restart fail2ban
 
+- name: Minimize fail2ban logging
+  copy:
+    dest: /etc/fail2ban/fail2ban.local
+    content: |
+      [Definition]
+      logtarget = SYSTEMD-JOURNAL
+  notify: Restart fail2ban
+
 - name: Harden SSH Configuration
   lineinfile:
     path: /etc/ssh/sshd_config
