@@ -1,0 +1,56 @@
+---
+- name: Install WireGuard
+  apt:
+    name: wireguard
+    state: present
+
+- name: Install iptables
+  apt:
+    name: iptables
+    state: present
+
+- name: Ensure WireGuard directory exists
+  file:
+    path: "/etc/wireguard"
+    state: directory
+
+- name: Generate WireGuard private key
+  shell: "wg genkey > {{ wg_private_key_file }}"
+  args:
+    creates: "{{ wg_private_key_file }}"
+
+- name: Ensure private key file has correct permissions and ownership
+  file:
+    path: "{{ wg_private_key_file }}"
+    mode: '0600'
+    owner: root
+    group: root
+
+- name: Generate WireGuard public key
+  shell: "wg pubkey < {{ wg_private_key_file }} > {{ wg_public_key_file }}"
+  args:
+    creates: "{{ wg_public_key_file }}"
+
+- name: Retrieve wireguard private key
+  slurp:
+    src: "{{ wg_private_key_file }}"
+  register: wg_private_key
+
+- name: Setup WireGuard config
+  template:
+    src: wg.conf.j2
+    dest: "{{ wg_config_file }}"
+
+- name: Enable IP forwarding
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: 1
+    state: present
+    sysctl_set: yes
+    reload: yes
+
+- name: Ensure WireGuard is up and running
+  ansible.builtin.systemd:
+    name: wg-quick@wg0
+    enabled: yes
+    state: started

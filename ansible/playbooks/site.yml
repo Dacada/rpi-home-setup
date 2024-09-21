@@ -30,6 +30,7 @@
     - bastion
     - ups
     - noip
+    - vpn  # ansible/playbooks/roles/vpn/defaults/main.yml needs to be updated if this changes
     - logclient
 
 - hosts: pihole

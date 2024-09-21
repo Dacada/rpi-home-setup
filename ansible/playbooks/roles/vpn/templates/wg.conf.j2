@@ -1,0 +1,16 @@
+# {{ ansible_managed }}
+
+[Interface]
+PrivateKey = {{ wg_private_key.content | b64decode }}
+Address = {{ wg_server_vpn_ip }}/24
+ListenPort = 51820  # REMINDER: THIS IS UDP
+PostUp = iptables -t nat -A POSTROUTING -s {{ wg_vpn_subnet }} -o {{ wg_network_interface }}  -j SNAT --to-source {{ wg_server_lan_ip }}; iptables -A FORWARD -i wg0 -d {{ wg_lan_subnet }} -j ACCEPT; iptables -A FORWARD -o wg0 -s {{ wg_lan_subnet }} -j ACCEPT; iptables -A INPUT -i wg0 -j LOG --log-prefix "WireGuard-Connection: "
+PostDown = iptables -t nat -D POSTROUTING -s {{ wg_vpn_subnet }} -o {{ wg_network_interface }} -j SNAT --to-source {{ wg_server_lan_ip }}; iptables -D FORWARD -i wg0 -d {{ wg_lan_subnet }} -j ACCEPT; iptables -D FORWARD -o wg0 -s {{ wg_lan_subnet }} -j ACCEPT; iptables -D INPUT -i wg0 -j LOG --log-prefix "WireGuard-Connection: "
+
+[Peer]
+PublicKey = {{ vpn.wg_public_key_client_1 }}
+AllowedIPs = 10.0.0.11/32
+
+# [Peer]
+# PublicKey = {{ vpn.wg_public_key_client_2 }}
+# AllowedIPs = 10.0.0.12/32
