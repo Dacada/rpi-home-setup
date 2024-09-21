@@ -14,6 +14,7 @@ echo "$(date) - Shutdown initiated by apcupsd" >> $LOGFILE
 for device in "${DEVICES[@]}"; do
   echo "$(date) - Issuing shutdown command to $device" >> $LOGFILE
   ssh dacada@$device "sudo /sbin/shutdown -h now"
+  ssh -o StrictHostKeyChecking=no -i /home/dacada/.ssh/id_rsa dacada@$device "sudo /sbin/shutdown -h now"
 
   # Log success or failure for each device
   if [ $? -eq 0 ]; then
