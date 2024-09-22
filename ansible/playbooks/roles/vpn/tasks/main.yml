@@ -14,32 +14,11 @@
     path: "/etc/wireguard"
     state: directory
 
-- name: Generate WireGuard private key
-  shell: "wg genkey > {{ wg_private_key_file }}"
-  args:
-    creates: "{{ wg_private_key_file }}"
-
-- name: Ensure private key file has correct permissions and ownership
-  file:
-    path: "{{ wg_private_key_file }}"
-    mode: '0600'
-    owner: root
-    group: root
-
-- name: Generate WireGuard public key
-  shell: "wg pubkey < {{ wg_private_key_file }} > {{ wg_public_key_file }}"
-  args:
-    creates: "{{ wg_public_key_file }}"
-
-- name: Retrieve wireguard private key
-  slurp:
-    src: "{{ wg_private_key_file }}"
-  register: wg_private_key
-
 - name: Setup WireGuard config
   template:
     src: wg.conf.j2
     dest: "{{ wg_config_file }}"
+  notify: Restart wireguard
 
 - name: Enable IP forwarding
   sysctl:
