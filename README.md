@@ -141,11 +141,36 @@ And then we just generate all these keys!
 
 You'll have to go and install the public automation key to every device (see above, in setup, for the format) and then run ansible to set up everything else. After that you'll have to re-sign the key on every device using the CA (see above, in Trusting Keys).
 
+# Setting up VPN clients
+
+Clients must have a private/public key pair, be added to the server so it knows to trust them, and be configured to talk to the server.
+
+In the server config, a `[Peer]` entry has to exist with the client's public key and the IP it will have in the VPN network. There are already several of these here.
+
+In the client, they must have a specific config. Here's an example where...
+
+- `abc123` is the client's private key
+- `def456` is the server's public key
+- `10.69.42.0/24` is the subnet for the VPN (the current subnet in the playbooks)
+- Within that subnet, the client will be on `.99`
+- The server endpoint is example.com and it uses the port 99999
+
+```
+[Interface]
+PrivateKey = abc123
+Address = 10.69.42.99/32
+DNS = 10.69.42.2  # Optional, if we want to use the pihole as DNS
+
+[Peer]
+PublicKey = def456
+Endpoint = example.com:99999
+AllowedIPs = 192.168.1.0/24, 10.69.42.0/24
+```
+
 # TODO
 
 In this order:
 
-- Add info to README about configuring WireGuard for clients
 - Add Samba to fileserver
 - Set up automatic updates
 - Look into the pihole dashboard (local)
