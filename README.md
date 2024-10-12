@@ -6,7 +6,7 @@ This repository includes scripts and documentation to set up the Raspberry Pi th
 
 The Raspberry Pi need some initial manual configuration.
 
-1. Burn Raspbian into the SD card (`rpi-imager` in whatever package manager, remember to select a headless image)
+1. Burn Raspbian into the SD card (`rpi-imager` in whatever package manager, run it under `sudo -E`, remember to select a headless image)
 2. Set special settings. We want...
    - A hostname, one of:
      - bastion
@@ -145,7 +145,12 @@ You'll have to go and install the public automation key to every device (see abo
 
 In this order:
 
+- Change the VPN network so it's less common to avoid collisions
+- Add pihole and fileserver as VPN clients
+- Add info to README about configuring WireGuard for clients
+- Add Samba to fileserver
 - Set up automatic updates
+- Look into the pihole dashboard (local)
 - Set up monitoring
 - Set up and expose webserver on bastion with landing page that can reverse proxy to other devices
 - Finish setting up the filserver (add deluge)
