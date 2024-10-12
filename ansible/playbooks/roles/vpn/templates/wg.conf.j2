@@ -9,16 +9,16 @@ PostDown = iptables -t nat -D POSTROUTING -s {{ wg_vpn_subnet }} -o {{ wg_networ
 
 [Peer]
 PublicKey = {{ vpn.wg_public_key_client_1 }}
-AllowedIPs = 10.0.0.11/32
+AllowedIPs = 10.69.42.11/32
 
 [Peer]
 PublicKey = {{ vpn.wg_public_key_client_2 }}
-AllowedIPs = 10.0.0.12/32
+AllowedIPs = 10.69.42.12/32
 
 [Peer]
 PublicKey = {{ vpn.wg_public_key_client_3 }}
-AllowedIPs = 10.0.0.21/32
+AllowedIPs = 10.69.42.21/32
 
 [Peer]
 PublicKey = {{ vpn.wg_public_key_client_4 }}
-AllowedIPs = 10.0.0.31/32
+AllowedIPs = 10.69.42.31/32
