@@ -8,6 +8,14 @@ PostUp = iptables -t nat -A POSTROUTING -s {{ wg_vpn_subnet }} -o {{ wg_network_
 PostDown = iptables -t nat -D POSTROUTING -s {{ wg_vpn_subnet }} -o {{ wg_network_interface }} -j SNAT --to-source {{ wg_server_lan_ip }}; iptables -D FORWARD -i wg0 -d {{ wg_lan_subnet }} -j ACCEPT; iptables -D FORWARD -o wg0 -s {{ wg_lan_subnet }} -j ACCEPT; iptables -D INPUT -i wg0 -j LOG --log-prefix "WireGuard-Connection: "
 
 [Peer]
+PublicKey = {{ vpn.wg_public_key_pihole }}
+AllowedIPs = 10.69.42.2/32
+
+[Peer]
+PublicKey = {{ vpn.wg_public_key_fileserver }}
+AllowedIPs = 10.69.42.3/32
+
+[Peer]
 PublicKey = {{ vpn.wg_public_key_client_1 }}
 AllowedIPs = 10.69.42.11/32
 

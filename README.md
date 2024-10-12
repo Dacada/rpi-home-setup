@@ -145,7 +145,6 @@ You'll have to go and install the public automation key to every device (see abo
 
 In this order:
 
-- Add pihole and fileserver as VPN clients
 - Add info to README about configuring WireGuard for clients
 - Add Samba to fileserver
 - Set up automatic updates

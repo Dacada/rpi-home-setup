@@ -30,7 +30,7 @@
     - bastion
     - ups
     - noip
-    - vpn  # ansible/playbooks/roles/vpn/defaults/main.yml needs to be updated if this changes
+    - vpn  # ansible/playbooks/roles/{vpn,vpnclient}/defaults/main.yml needs to be updated if this changes
     - logclient
 
 - hosts: pihole
@@ -39,6 +39,8 @@
     identity_ssh_key: "{{ ssh_keys.pihole.private_key }}"
     ansible_user: dacada
     ansible_python_interpreter: /usr/bin/python3
+    wg_private_key_client: "{{ vpn.wg_private_key_pihole }}"
+    wg_client_vpn_ip: "10.69.42.2"
   vars_files:
     - ../vars/secrets.yml
   roles:
@@ -46,6 +48,7 @@
     - ca_access
     - pihole
     - logclient
+    - vpnclient
 
 - hosts: fileserver
   become: true
@@ -53,6 +56,8 @@
     identity_ssh_key: "{{ ssh_keys.fileserver.private_key }}"
     ansible_user: dacada
     ansible_python_interpreter: /usr/bin/python3
+    wg_private_key_client: "{{ vpn.wg_private_key_fileserver }}"
+    wg_client_vpn_ip: "10.69.42.3"
   vars_files:
     - ../vars/secrets.yml
   roles:
@@ -60,3 +65,4 @@
     - ca_access
     - fileserver
     - logserver  # ansible/playbooks/roles/logclient/defaults/main.yml needs to be updated if this changes
+    - vpnclient

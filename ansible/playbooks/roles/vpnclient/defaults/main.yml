@@ -1,6 +1,4 @@
 wg_config_file: /etc/wireguard/wg0.conf
 wg_network_interface: eth0
 wg_server_lan_ip: 192.168.1.41
-wg_server_vpn_ip: 10.69.42.1
-wg_lan_subnet: 192.168.1.0/24
 wg_vpn_subnet: 10.69.42.0/24
