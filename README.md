@@ -171,7 +171,6 @@ AllowedIPs = 192.168.1.0/24, 10.69.42.0/24
 
 In this order:
 
-- Add Samba to fileserver
 - Set up automatic updates
 - Look into the pihole dashboard (local)
 - Set up monitoring

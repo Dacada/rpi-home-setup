@@ -1,0 +1,24 @@
+# {{ ansible_managed }}
+
+[global]
+  server string = Fileserver Samba Server
+  netbios name = fileserver
+  security = user
+  map to guest = Bad User
+  dns proxy = no
+  syslog = 1
+  syslog only = yes
+  server role = standalone server
+  passdb backend = tdbsam
+  load printers = no
+  disable spoolss = yes
+
+[fileserver_ssd]
+  path = /mnt/files/files
+  valid users = smbuser
+  read only = no
+  browseable = yes
+  create mask = 0770
+  directory mask = 0770
+  force user = smbuser
+  force group = smbusers

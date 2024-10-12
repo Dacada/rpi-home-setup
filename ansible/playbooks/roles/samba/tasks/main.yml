@@ -1,0 +1,59 @@
+---
+- name: Install samba
+  apt:
+    name: samba
+    state: present
+
+- name: Create smbusers group
+  group:
+    name: smbusers
+    state: present
+
+- name: Create smbuser user
+  user:
+    name: smbuser
+    group: smbusers
+    shell: /sbin/nologin
+    home: /nonexistent
+    password: "{{ samba.linux_password | password_hash('sha512') }}"
+    state: present
+
+- name: Set ownership
+  file:
+    path: /mnt/files/files
+    owner: smbuser
+    group: smbusers
+    recurse: yes
+
+- name: Set permissions
+  file:
+    path: /mnt/files/files
+    mode: '0770'
+    recurse: yes
+
+- name: Add admin user to smbusers group
+  user:
+    name: dacada
+    groups: smbusers
+    append: yes
+
+- name: Ensure samba directory exists
+  file:
+    path: "/etc/samba"
+    state: directory
+
+- name: Setup samba config
+  template:
+    src: smb.conf.j2
+    dest: "/etc/samba/smb.conf"
+  notify: Restart samba
+
+- name: Ensure samba is up and running
+  systemd:
+    name: smbd
+    enabled: yes
+    state: started
+
+- name: Check if Samba user exists (if this fails, create the user manually!)
+  command: "pdbedit -L -u smbuser"
+  changed_when: false
