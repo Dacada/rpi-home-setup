@@ -26,6 +26,7 @@
     - ../vars/secrets.yml
   roles:
     - common
+    - auto_upgrades
     - ca_access
     - bastion
     - ups
@@ -45,6 +46,7 @@
     - ../vars/secrets.yml
   roles:
     - common
+    - auto_upgrades
     - ca_access
     - pihole
     - logclient
@@ -62,6 +64,7 @@
     - ../vars/secrets.yml
   roles:
     - common
+    - auto_upgrades
     - ca_access
     - fileserver
     - logserver  # ansible/playbooks/roles/logclient/defaults/main.yml needs to be updated if this changes

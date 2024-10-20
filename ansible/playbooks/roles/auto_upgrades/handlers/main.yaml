@@ -1,0 +1,6 @@
+---
+- name: Restart unattended-upgrades
+  systemd:
+    name: unattended-upgrades
+    state: restarted
+    enabled: yes
