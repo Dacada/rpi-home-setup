@@ -167,12 +167,15 @@ Endpoint = example.com:99999
 AllowedIPs = 192.168.1.0/24, 10.69.42.0/24
 ```
 
+# Pihole
+
+Pihole is installed manually, using the instructions on the official website. Additionally, it must be configured (through the Web UI) to serve requests from any network. This is vital to get it working from the VPN, and safe as long as I never expose the service out on the Internet.
+
 # TODO
 
 In this order:
 
 - Set up automatic updates
-- Look into the pihole dashboard (local)
 - Set up monitoring
-- Set up and expose webserver on bastion with landing page that can reverse proxy to other devices
 - Finish setting up the filserver (add deluge)
+- Set up and expose webserver on bastion with landing page that can reverse proxy to other devices
