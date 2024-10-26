@@ -1,0 +1,26 @@
+- name: Check if Netdata binary exists
+  stat:
+    path: /usr/sbin/netdata
+  register: netdata_installed
+
+- name: Download Netdata installation script
+  get_url:
+    url: https://my-netdata.io/kickstart.sh
+    dest: /tmp/kickstart.sh
+    mode: '0755'
+  when: not netdata_installed.stat.exists
+
+- name: Install and claim netdata node
+  shell: /tmp/kickstart.sh --stable-channel --non-interactive --claim-token {{ netdata.claim_token }} --claim-rooms {{ netdata.claim_room }} --claim-url https://app.netdata.cloud
+  when: not netdata_installed.stat.exists
+
+- name: Ensure netdata is enabled
+  systemd:
+    name: netdata
+    enabled: yes
+
+- name: Set up monitoring for pihole properly
+  template:
+    src: pihole.conf.j2
+    dest: /etc/netdata/go.d/pihole.conf
+  when: "'pihole' in group_names"
