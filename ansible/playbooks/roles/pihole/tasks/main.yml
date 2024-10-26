@@ -11,7 +11,7 @@
     mode: '0755'
   when: not pihole_installed.stat.exists
 
-- name: Fail if Pi-hole is not installed, with manual instructions
+- name: Fail if Pi-hole is not installed
   fail:
     msg: "Pi-hole is not installed. Please run the following command on the Pi-hole device to install it: 'sudo bash /tmp/pihole_install.sh'"
   when: not pihole_installed.stat.exists

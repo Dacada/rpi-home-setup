@@ -3,4 +3,3 @@
   systemd:
     name: unattended-upgrades
     state: restarted
-    enabled: yes
