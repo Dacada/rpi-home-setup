@@ -28,7 +28,6 @@
     - common
     - auto_upgrades
     - ca_access
-    - monitoring
     - bastion
     - ups
     - noip
@@ -49,7 +48,6 @@
     - common
     - auto_upgrades
     - ca_access
-    - monitoring
     - pihole
     - logclient
     - vpnclient
@@ -68,7 +66,6 @@
     - common
     - auto_upgrades
     - ca_access
-    - monitoring
     - fileserver
     - logserver  # ansible/playbooks/roles/logclient/defaults/main.yml needs to be updated if this changes
     - vpnclient

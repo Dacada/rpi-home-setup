@@ -24,14 +24,3 @@
     group: root
     mode: '0644'
   notify: Restart rsyslog
-
-- name: Ensure lighttpd configuration with mod_status
-  blockinfile:
-    path: /etc/lighttpd/lighttpd.conf
-    marker: "# {mark} MANAGED BY ANSIBLE"
-    insertafter: EOF
-    block: |
-      server.modules += ("mod_status")
-      status.status-url = "/server-status"
-  notify:
-    - Restart lighttpd

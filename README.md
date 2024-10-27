@@ -175,6 +175,7 @@ Pihole is installed manually, using the instructions on the official website. Ad
 
 In this order:
 
+- Set up monitoring
 - Finish setting up the filserver (add deluge)
 - Set up and expose webserver on bastion with landing page that can reverse proxy to other devices (Homepage?)
 - Biwarden/vaultwarden?
