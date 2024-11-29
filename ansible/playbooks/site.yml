@@ -1,6 +1,6 @@
 ---
 - hosts: all
-  gather_facts: false  # Disable fact gathering until the key is set
+  gather_facts: false # Disable fact gathering until the key is set
   vars_files:
     - ../vars/secrets.yml
   tasks:
@@ -8,7 +8,7 @@
       copy:
         content: "{{ ssh_keys.automation.private_key }}"
         dest: "/tmp/automation_private_key"
-        mode: '0600'
+        mode: "0600"
       delegate_to: localhost
       run_once: true
 
@@ -31,8 +31,9 @@
     - bastion
     - ups
     - noip
-    - vpn  # ansible/playbooks/roles/{vpn,vpnclient}/defaults/main.yml needs to be updated if this changes
+    - vpn # ansible/playbooks/roles/{vpn,vpnclient}/defaults/main.yml needs to be updated if this changes
     - logclient
+    - monitoring
 
 - hosts: pihole
   become: true
@@ -51,6 +52,7 @@
     - pihole
     - logclient
     - vpnclient
+    - monitoring
 
 - hosts: fileserver
   become: true
@@ -67,6 +69,7 @@
     - auto_upgrades
     - ca_access
     - fileserver
-    - logserver  # ansible/playbooks/roles/logclient/defaults/main.yml needs to be updated if this changes
+    - logserver # ansible/playbooks/roles/logclient/defaults/main.yml needs to be updated if this changes
     - vpnclient
     - samba
+    - monitoring

@@ -1,0 +1,12 @@
+[Unit]
+Description=Simplest Monitor
+After=network.target
+
+[Service]
+ExecStart=/opt/simpmon/.venv/bin/python /opt/simpmon/main.py
+Restart=on-failure
+RestartSec=5
+Environment="PYTHONUNBUFFERED=1"
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,339 @@
+{
+    "name": "{{ ansible_hostname }}",
+    "loglevel": "INFO",
+    "log_to_file": false,
+    "webui_address": "0.0.0.0",
+    "webui_port": 8080,
+    "alarms": [
+        {
+            "name": "GMAIL_ALARM",
+            "sender": "{{ monitoring.alarm_email }}",
+            "receiver": "{{ monitoring.alarm_email }}",
+            "server": "smtp.gmail.com",
+            "port": 587,
+            "app_password": "{{ monitoring.gmail_password }}"
+        }
+    ],
+    "monitors": [
+        {
+            "name": "LOAD_AVERAGE",
+            "title": "Load average (1 minute)",
+            "alarms": [
+                {
+                    "name": "Abnormal",
+                    "count": 5,
+                    "value": {{ ansible_processor_vcpus / 2 }},
+                    "exceedance": "OVER",
+                    "reminder_age": "PT24H"
+                },
+                {
+                    "name": "Critical",
+                    "count": 5,
+                    "value": {{ ansible_processor_vcpus }},
+                    "exceedance": "OVER",
+                    "reminder_age": "PT1H"
+                }
+            ],
+            "which": 0
+        },
+        {
+            "name": "DISK_USAGE",
+            "title": "Disk usage for /",
+            "alarms": [
+                {
+                    "name": "Abnormal",
+                    "count": 1,
+                    "value": 50,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT24H"
+                },
+                {
+                    "name": "Critical",
+                    "count": 1,
+                    "value": 75,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT1H"
+                }
+            ],
+            "mountpoint": "/",
+            "which": "PERCENT",
+            "unit_base": 1024,
+            "unit_exponent": 4
+        },
+        {
+            "name": "DISK_USAGE",
+            "title": "Disk usage for /mnt/logs",
+            "alarms": [
+                {
+                    "name": "Abnormal",
+                    "count": 1,
+                    "value": 50,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT24H"
+                },
+                {
+                    "name": "Critical",
+                    "count": 1,
+                    "value": 75,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT1H"
+                }
+            ],
+            "mountpoint": "/mnt/logs",
+            "which": "PERCENT",
+            "unit_base": 1024,
+            "unit_exponent": 4
+        },
+        {
+            "name": "DISK_USAGE",
+            "title": "Disk usage for /mnt/files",
+            "alarms": [
+                {
+                    "name": "Abnormal",
+                    "count": 1,
+                    "value": 50,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT24H"
+                },
+                {
+                    "name": "Critical",
+                    "count": 1,
+                    "value": 75,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT1H"
+                }
+            ],
+            "mountpoint": "/mnt/files",
+            "which": "PERCENT",
+            "unit_base": 1024,
+            "unit_exponent": 4
+        },
+        {
+            "name": "DISK_WRITE_RATE",
+            "title": "Disk write rate for /",
+            "alarms": [
+                {
+                    "name": "Abnormal",
+                    "count": 1,
+                    "value": 1,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT24H"
+                },
+                {
+                    "name": "Critical",
+                    "count": 10,
+                    "value": 1,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT1H"
+                }
+            ],
+            "disk": "mmcblk0p2",
+            "unit_base": 1024,
+            "unit_exponent": 3
+        },
+        {
+            "name": "TEMPERATURE",
+            "title": "Temperature",
+            "alarms": [
+                {
+                    "name": "Abnormal",
+                    "count": 3,
+                    "value": 70,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT24H"
+                },
+                {
+                    "name": "Critical",
+                    "count": 5,
+                    "value": 80,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT1H"
+                }
+            ],
+            "sensor_name": "cpu_thermal",
+            "index": 0
+        },
+        {
+            "name": "UPTIME",
+            "title": "Uptime",
+            "alarms": [
+                {
+                    "name": "Restarted",
+                    "count": 1,
+                    "value": 10,
+                    "exceedance": "UNDER",
+                    "reminder_age": "PT24H"
+                }
+            ]
+        },
+        {
+            "name": "SYSTEMD",
+            "title": "sshd status",
+            "alarms": [
+                {
+                    "name": "Stopped",
+                    "count": 1,
+                    "value": 0.9,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT24H"
+                }
+            ],
+            "service": "sshd"
+        },
+        {
+            "name": "SYSTEMD",
+            "title": "unattended-upgrades status",
+            "alarms": [
+                {
+                    "name": "Stopped",
+                    "count": 1,
+                    "value": 0.9,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT24H"
+                }
+            ],
+            "service": "unattended-upgrades"
+        },
+        {
+            "name": "SYSTEMD",
+            "title": "samba status",
+            "alarms": [
+                {
+                    "name": "Stopped",
+                    "count": 1,
+                    "value": 0.9,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT24H"
+                }
+            ],
+            "service": "smbd"
+        },
+        {
+            "name": "SYSTEMD",
+            "title": "wireguard status",
+            "alarms": [
+                {
+                    "name": "Stopped",
+                    "count": 1,
+                    "value": 0.9,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT24H"
+                }
+            ],
+            "service": "wg-quick@wg0"
+        },
+        {
+            "name": "SYSTEMD",
+            "title": "rsyslog status",
+            "alarms": [
+                {
+                    "name": "Stopped",
+                    "count": 1,
+                    "value": 0.9,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT24H"
+                }
+            ],
+            "service": "rsyslog"
+        },
+        {
+            "name": "PING",
+            "title": "Ping to internet",
+            "alarms": [
+                {
+                    "name": "Slow",
+                    "count": 10,
+                    "value": 100,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT12H"
+                },
+                {
+                    "name": "Failing",
+                    "count": 10,
+                    "value": -0.5,
+                    "exceedance": "UNDER",
+                    "reminder_age": "PT12H"
+                }
+            ],
+            "ip": "8.8.8.8"
+        },
+        {
+            "name": "PING",
+            "title": "Ping to bastion",
+            "alarms": [
+                {
+                    "name": "Slow",
+                    "count": 10,
+                    "value": 25,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT12H"
+                },
+                {
+                    "name": "Failing",
+                    "count": 10,
+                    "value": -0.5,
+                    "exceedance": "UNDER",
+                    "reminder_age": "PT12H"
+                }
+            ],
+            "ip": "192.168.1.41"
+        },
+        {
+            "name": "PING",
+            "title": "Ping to pihole",
+            "alarms": [
+                {
+                    "name": "Slow",
+                    "count": 10,
+                    "value": 25,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT12H"
+                },
+                {
+                    "name": "Failing",
+                    "count": 10,
+                    "value": -0.5,
+                    "exceedance": "UNDER",
+                    "reminder_age": "PT12H"
+                }
+            ],
+            "ip": "192.168.1.72"
+        },
+        {
+            "name": "PING",
+            "title": "Ping to fileserver",
+            "alarms": [
+                {
+                    "name": "Slow",
+                    "count": 10,
+                    "value": 25,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT12H"
+                },
+                {
+                    "name": "Failing",
+                    "count": 10,
+                    "value": -0.5,
+                    "exceedance": "UNDER",
+                    "reminder_age": "PT12H"
+                }
+            ],
+            "ip": "192.168.1.103"
+        },
+        {
+            "name": "PACKAGE_MANAGER",
+            "title": "Pending package upgrades",
+            "alarms": [
+                {
+                    "name": "High",
+                    "count": 1,
+                    "value": 10,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT24H"
+                }
+            ],
+            "package_manager": "APT",
+            "delay": 60
+        }
+    ]
+}

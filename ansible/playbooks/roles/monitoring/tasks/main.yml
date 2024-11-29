@@ -1,0 +1,55 @@
+---
+- name: Ensure dependencies are installed
+  apt:
+    name:
+      - git
+      - python3-pip
+      - cmake
+      - libdbus-1-dev
+      - libglib2.0-dev
+    state: present
+    update_cache: yes
+
+- name: Pull monitor from git
+  git:
+    repo: "https://github.com/Dacada/simple-monitor"
+    dest: "/opt/simpmon"
+    version: "master"
+    force: yes
+
+- name: Install dependencies to virtualenv
+  pip:
+    requirements: /opt/simpmon/requirements.txt
+    virtualenv: /opt/simpmon/.venv
+    virtualenv_command: "/usr/bin/python -m venv"
+
+- name: Copy simpmon.service
+  template:
+    src: "simpmon.service.j2"
+    dest: /etc/systemd/system/simpmon.service
+    mode: "0644"
+  register: copy_service_file
+
+- name: Ensure config directory exists
+  file:
+    path: /etc/simpmon
+    state: directory
+    owner: "root"
+    group: "root"
+    mode: "0755"
+
+- name: Copy simpmon config
+  template:
+    src: "config_{{ ansible_hostname }}.json.j2"
+    dest: "/etc/simpmon/config.json"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  notify: Restart simpmon
+
+- name: Enable and start the simpmon service
+  ansible.builtin.systemd:
+    name: simpmon.service
+    enabled: yes
+    state: started
+    daemon_reload: "{{ copy_service_file.changed }}"
