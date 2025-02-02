@@ -314,6 +314,20 @@
             ],
             "package_manager": "APT",
             "delay": 60
+        },
+        {
+            "name": "HEARTBEAT",
+            "title": "Heartbeat trigger",
+            "alarms": [
+                {
+                    "name": "Trigger",
+                    "count": 1,
+                    "value": 0.9,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT1H"
+                }
+            ],
+            "alarm_time": "06:00:00"
         }
     ]
 }

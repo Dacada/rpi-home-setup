@@ -61,54 +61,6 @@
             "unit_exponent": 4
         },
         {
-            "name": "DISK_USAGE",
-            "title": "Disk usage for /mnt/logs",
-            "alarms": [
-                {
-                    "name": "Abnormal",
-                    "count": 1,
-                    "value": 50,
-                    "exceedance": "OVER",
-                    "reminder_age": "PT24H"
-                },
-                {
-                    "name": "Critical",
-                    "count": 1,
-                    "value": 75,
-                    "exceedance": "OVER",
-                    "reminder_age": "PT1H"
-                }
-            ],
-            "mountpoint": "/mnt/logs",
-            "which": "PERCENT",
-            "unit_base": 1024,
-            "unit_exponent": 4
-        },
-        {
-            "name": "DISK_USAGE",
-            "title": "Disk usage for /mnt/files",
-            "alarms": [
-                {
-                    "name": "Abnormal",
-                    "count": 1,
-                    "value": 50,
-                    "exceedance": "OVER",
-                    "reminder_age": "PT24H"
-                },
-                {
-                    "name": "Critical",
-                    "count": 1,
-                    "value": 75,
-                    "exceedance": "OVER",
-                    "reminder_age": "PT1H"
-                }
-            ],
-            "mountpoint": "/mnt/files",
-            "which": "PERCENT",
-            "unit_base": 1024,
-            "unit_exponent": 4
-        },
-        {
             "name": "DISK_WRITE_RATE",
             "title": "Disk write rate for /",
             "alarms": [
@@ -334,6 +286,20 @@
             ],
             "package_manager": "APT",
             "delay": 60
+        },
+        {
+            "name": "HEARTBEAT",
+            "title": "Heartbeat trigger",
+            "alarms": [
+                {
+                    "name": "Trigger",
+                    "count": 1,
+                    "value": 0.9,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT1H"
+                }
+            ],
+            "alarm_time": "06:00:00"
         }
     ]
 }
