@@ -171,10 +171,17 @@ AllowedIPs = 192.168.1.0/24, 10.69.42.0/24
 
 Pihole is installed manually, using the instructions on the official website. Additionally, it must be configured (through the Web UI) to serve requests from any network. This is vital to get it working from the VPN, and safe as long as I never expose the service out on the Internet.
 
+# Permissions
+
+The permissions for the fileserver should be every file under the smb user and group, 770 permissions. And for the seedbox, within the directory, everything owned by the deluge running user and group, 775 so others (smb) can read. I couldn't find a good succint way to express this in ansible for existing files, but new files should work like this with the way ansible sets up things.
+
+# Deluge
+
+TCP and UDP ports NATed to the fileserver, check Deluge config for the exact ones.
+
 # TODO
 
 In this order:
 
-- Finish setting up the filserver (add deluge)
 - Set up and expose webserver on bastion with landing page that can reverse proxy to other devices (Homepage?)
 - Biwarden/vaultwarden?

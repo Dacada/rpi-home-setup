@@ -1,0 +1,39 @@
+---
+- name: Ensure deluge is installed
+  apt:
+    name:
+      - deluged
+      - deluge-web
+    state: present
+    update_cache: yes
+
+- name: Copy deluged configuration
+  template:
+    src: core.conf.j2
+    dest: "/var/lib/deluged/config/core.conf"
+  notify: Restart deluged completely
+
+- name: Copy deluge-web configuration
+  template:
+    src: web.conf.j2
+    dest: "/var/lib/deluged/config/web.conf"
+  notify: Restart deluged completely
+
+- name: Add deluge user to the smb users group
+  user:
+    name: debian-deluged
+    groups: smbusers
+    append: yes
+
+- name: Ensure permissions for seedbox contents
+  file:
+    path: /mnt/files/files/seedbox
+    mode: "0775"
+    recurse: yes
+
+- name: Ensure Deluge systemd service file has correct UMask
+  lineinfile:
+    path: /lib/systemd/system/deluged.service
+    regexp: '^(\s*)UMask='
+    line: "UMask=002"
+  notify: Restart deluged completely

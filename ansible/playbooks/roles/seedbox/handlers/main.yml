@@ -1,0 +1,22 @@
+---
+- name: Restart deluged completely
+  block:
+    - name: Stop web
+      service:
+        name: deluge-web
+        state: stopped
+    - name: Stop deluged
+      service:
+        name: deluged
+        state: stopped
+    - name: Reload daemons
+      systemd_service:
+        daemon_reload: true
+    - name: Start deluged
+      service:
+        name: deluged
+        state: started
+    - name: Start deluge-web
+      service:
+        name: deluge-web
+        state: started

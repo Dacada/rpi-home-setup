@@ -19,19 +19,6 @@
     state: present
     update_password: on_create
 
-- name: Set ownership
-  file:
-    path: /mnt/files/files
-    owner: smbuser
-    group: smbusers
-    recurse: yes
-
-- name: Set permissions
-  file:
-    path: /mnt/files/files
-    mode: '0770'
-    recurse: yes
-
 - name: Add admin user to smbusers group
   user:
     name: dacada
