@@ -179,6 +179,11 @@ The permissions for the fileserver should be every file under the smb user and g
 
 TCP and UDP ports NATed to the fileserver, check Deluge config for the exact ones.
 
+# SSH/VPN NAT
+
+* WAN port 42420 for the ssh into the LAN port 22 of the bastion
+* WAN and LAN port 51820 for the VPN into the bastion
+
 # TODO
 
 In this order:
