@@ -1,0 +1,10 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=Run Wealth Tracker update periodically
+
+[Timer]
+OnCalendar=03:00
+
+[Install]
+WantedBy=timers.target

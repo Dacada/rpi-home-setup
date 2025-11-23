@@ -1,0 +1,3 @@
+data_directory: /mnt/files/wealth_tracker
+image_url: registry.gitlab.com/dacada/wealth-tracker
+image_tag: latest

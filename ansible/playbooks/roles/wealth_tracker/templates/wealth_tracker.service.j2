@@ -1,0 +1,27 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=Wealth Tracker application container
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+
+ExecStartPre=-/usr/bin/docker rm -f wealth_tracker
+
+ExecStart=/usr/bin/docker run \
+    --name wealth_tracker \
+    --rm \
+    -p 3000:3000 \
+    -e RAILS_MASTER_KEY={{ wealth_tracker.rails_master_key }} \
+    -v {{ data_directory }}:/data \
+    {{ image_url }}:{{ image_tag }}
+
+ExecStop=/usr/bin/docker stop wealth_tracker
+
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

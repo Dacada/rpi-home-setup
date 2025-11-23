@@ -1,0 +1,8 @@
+# {{ ansible_managed }}
+
+[Unit]
+Description=Update Wealth Tracker container
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/deploy_wealth_tracker.sh

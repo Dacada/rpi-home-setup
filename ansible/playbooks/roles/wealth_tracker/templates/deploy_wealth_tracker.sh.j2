@@ -1,0 +1,41 @@
+#!/bin/bash
+# {{ ansible_managed }}
+set -euo pipefail
+
+IMAGE="{{ image_url }}:{{ image_tag }}"
+
+echo "Pulling image $IMAGE..."
+docker pull "$IMAGE"
+
+{% raw %}
+REMOTE_DIGEST="$(docker inspect --format='{{index .RepoDigests 0}}' "$IMAGE")"
+{% endraw %}
+
+if [ -z "$REMOTE_DIGEST" ]; then
+    echo "Error: unable to obtain remote digest for $IMAGE"
+    exit 1
+fi
+
+LOCAL_DIGEST=""
+if docker inspect wealth_tracker >/dev/null 2>&1; then
+    {% raw %}
+    LOCAL_IMAGE_ID="$(docker inspect --format='{{.Image}}' wealth_tracker)"
+    LOCAL_DIGEST="$(docker inspect --format='{{index .RepoDigests 0}}' "$LOCAL_IMAGE_ID" 2>/dev/null || true)"
+    {% endraw %}
+fi
+
+if [ -z "$LOCAL_DIGEST" ]; then
+    echo "No existing container found; performing initial deployment."
+    systemctl restart wealth_tracker.service
+    exit 0
+fi
+
+if [ "$REMOTE_DIGEST" != "$LOCAL_DIGEST" ]; then
+    echo "New image detected:"
+    echo "  remote: $REMOTE_DIGEST"
+    echo "  local:  $LOCAL_DIGEST"
+    systemctl restart wealth_tracker.service
+    echo "Deployment complete."
+else
+    echo "No changes detected."
+fi
