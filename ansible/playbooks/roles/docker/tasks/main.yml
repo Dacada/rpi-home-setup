@@ -1,0 +1,48 @@
+---
+- name: Ensure required packages for apt over HTTPS are installed
+  apt:
+    name:
+      - ca-certificates
+      - curl
+    update_cache: yes
+    state: present
+
+- name: Create keyring directory
+  file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
+
+- name: Download Docker GPG key
+  get_url:
+    url: "{{ docker_gpg_url }}"
+    dest: "{{ docker_key_path }}"
+    mode: '0644'
+
+- name: Add Docker repository
+  copy:
+    dest: "{{ docker_repo_file }}"
+    mode: '0644'
+    content: |
+      Types: deb
+      URIs: https://download.docker.com/linux/debian
+      Suites: {{ ansible_facts['lsb']['codename'] }}
+      Components: stable
+      Signed-By: {{ docker_key_path }}
+
+- name: Install Docker packages
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-buildx-plugin
+      - docker-compose-plugin
+    update_cache: yes
+    state: present
+
+- name: Ensure Docker service is active
+  systemd:
+    name: docker
+    enabled: yes
+    state: started
