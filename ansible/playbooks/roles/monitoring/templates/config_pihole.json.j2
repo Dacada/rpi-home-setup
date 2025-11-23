@@ -1,5 +1,5 @@
 {
-    "name": "{{ ansible_hostname }}",
+    "name": "{{ ansible_facts['hostname'] }}",
     "loglevel": "INFO",
     "log_to_file": false,
     "webui_address": "0.0.0.0",
@@ -22,14 +22,14 @@
                 {
                     "name": "Abnormal",
                     "count": 5,
-                    "value": {{ ansible_processor_vcpus / 2 }},
+                    "value": {{ ansible_facts['processor_vcpus'] / 2 }},
                     "exceedance": "OVER",
                     "reminder_age": "PT24H"
                 },
                 {
                     "name": "Critical",
                     "count": 5,
-                    "value": {{ ansible_processor_vcpus }},
+                    "value": {{ ansible_facts['processor_vcpus'] }},
                     "exceedance": "OVER",
                     "reminder_age": "PT1H"
                 }

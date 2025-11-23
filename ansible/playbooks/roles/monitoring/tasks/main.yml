@@ -40,7 +40,7 @@
 
 - name: Copy simpmon config
   template:
-    src: "config_{{ ansible_hostname }}.json.j2"
+    src: "config_{{ ansible_facts['hostname'] }}.json.j2"
     dest: "/etc/simpmon/config.json"
     owner: "root"
     group: "root"
