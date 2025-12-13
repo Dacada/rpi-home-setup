@@ -77,3 +77,4 @@
     - seedbox
     - docker
     - wealth_tracker
+    - gitlab_runner

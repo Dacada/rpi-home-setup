@@ -1,0 +1,35 @@
+---
+- name: Create gitlab-runner user
+  user:
+    name: "gitlab-runner"
+    comment: "GitLab Runner"
+    home: "/home/gitlab-runner"
+    shell: /bin/bash
+    create_home: true
+
+- name: Download gitlab-runner binary
+  get_url:
+    url: "https://gitlab-runner-downloads.s3.amazonaws.com/latest/binaries/gitlab-runner-linux-arm64"
+    dest: "/usr/local/bin/gitlab-runner"
+    mode: "0755"
+    owner: root
+    group: root
+
+- name: Install gitlab-runner as a service
+  ansible.builtin.command:
+    cmd: sudo gitlab-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner
+  args:
+    creates: /etc/systemd/system/gitlab-runner.service
+
+# if this fails, start the service manually, make sure the runner works, at worst probably gotta re-register the runner?
+# if the config is recreated, you will need to set the docker runner to allow docker out of docker
+# - privileged = false
+# + privileged = true
+# - volumes = ["/cache"]
+# + volumes = ["/var/run/docker.sock:/var/run/docker.sock", "/cache"]
+# maybe in the future i can fully automate this config, but im not sure how much the manually ran commands do other than setting up the token
+- name: Check myservice status
+  command: systemctl is-active gitlab-runner
+  register: gitlab_runner_status
+  changed_when: false
+  failed_when: gitlab_runner_status.stdout != "active"
