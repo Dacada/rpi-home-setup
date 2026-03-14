@@ -1,0 +1,9 @@
+#!/bin/bash
+# {{ ansible_managed }}
+set -euo pipefail
+
+echo "Stopping staging container..."
+docker stop wealth_tracker_staging || true
+docker rm wealth_tracker_staging || true
+
+echo "Staging container stopped. Database persists at /mnt/files/wealth_tracker_staging"

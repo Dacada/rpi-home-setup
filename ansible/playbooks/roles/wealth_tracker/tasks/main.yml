@@ -18,6 +18,18 @@
     dest: /usr/local/bin/deploy_wealth_tracker.sh
     mode: "0755"
 
+- name: Install staging start script
+  template:
+    src: start-staging.sh.j2
+    dest: /usr/local/bin/start-staging.sh
+    mode: "0755"
+
+- name: Install staging stop script
+  template:
+    src: stop-staging.sh.j2
+    dest: /usr/local/bin/stop-staging.sh
+    mode: "0755"
+
 - name: Install updater systemd service unit
   template:
     src: wealth_tracker_update.service.j2
