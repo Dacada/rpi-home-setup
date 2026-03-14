@@ -1,0 +1,69 @@
+#!/bin/bash
+# {{ ansible_managed }}
+set -euo pipefail
+
+# Parse arguments
+PRESERVE_DB=false
+TAG=""
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --preserve-db)
+            PRESERVE_DB=true
+            shift
+            ;;
+        *)
+            if [ -z "$TAG" ]; then
+                TAG="$1"
+                shift
+            else
+                echo "Error: unexpected argument '$1'"
+                exit 1
+            fi
+            ;;
+    esac
+done
+
+# Require image tag
+if [ -z "$TAG" ]; then
+    echo "Usage: $0 [--preserve-db] <image-tag>"
+    echo "Example: $0 registry.gitlab.com/dacada/wealth-tracker:abc123def456"
+    echo "Example: $0 --preserve-db registry.gitlab.com/dacada/wealth-tracker:abc123def456"
+    exit 1
+fi
+
+PROD_DB="/mnt/files/wealth_tracker"
+STAGING_DB="/mnt/files/wealth_tracker_staging"
+RAILS_MASTER_KEY="{{ wealth_tracker.rails_master_key }}"
+
+if [ "$PRESERVE_DB" = false ]; then
+    # Copy prod DB to staging
+    echo "⚠️  WARNING: Staging database will be overwritten by copying from prod..."
+    
+    echo "Stopping prod..."
+    systemctl stop wealth_tracker.service
+    
+    echo "Copying prod DB to staging..."
+    rm -rf "$STAGING_DB"
+    cp -r "$PROD_DB" "$STAGING_DB"
+    
+    echo "Starting prod..."
+    systemctl start wealth_tracker.service
+else
+    # Reuse existing staging DB
+    if [ ! -d "$STAGING_DB" ]; then
+        echo "Error: --preserve-db specified but no existing staging database at $STAGING_DB"
+        exit 1
+    fi
+    echo "Using existing staging database at $STAGING_DB"
+fi
+
+echo "Pulling image: $TAG"
+docker pull "$TAG"
+
+echo "Starting staging container on port 3001..."
+docker run -d --name wealth_tracker_staging -p 3001:3000 \
+    -e RAILS_MASTER_KEY="$RAILS_MASTER_KEY" \
+    -v "$STAGING_DB":/data "$TAG"
+
+echo "Staging server is running on port 3001"
