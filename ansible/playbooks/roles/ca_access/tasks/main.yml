@@ -13,3 +13,35 @@
     line: 'TrustedUserCAKeys /etc/ssh/ca.pub'
     state: present
   notify: Restart SSH
+
+- name: Create SSH principals directory
+  file:
+    path: /etc/ssh/principals
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Configure SSH to enforce principals
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?AuthorizedPrincipalsFile'
+    line: 'AuthorizedPrincipalsFile /etc/ssh/principals/%u'
+    state: present
+  notify: Restart SSH
+
+- name: Create principals file for dacada
+  copy:
+    content: "dacada\n"
+    dest: /etc/ssh/principals/dacada
+    owner: root
+    group: root
+    mode: '0644'
+
+- name: Create principals file for llmagent
+  copy:
+    content: "llmagent\n"
+    dest: /etc/ssh/principals/llmagent
+    owner: root
+    group: root
+    mode: '0644'
