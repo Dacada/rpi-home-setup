@@ -1,0 +1,18 @@
+---
+- name: Create llmagent user
+  user:
+    name: llmagent
+    state: present
+    shell: /bin/bash
+    home: /home/llmagent
+    createhome: yes
+    groups: []  # No group membership beyond primary
+    append: no  # Don't add to existing groups
+
+- name: Ensure llmagent .ssh directory exists
+  file:
+    path: /home/llmagent/.ssh
+    state: directory
+    mode: '0700'
+    owner: llmagent
+    group: llmagent

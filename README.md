@@ -40,7 +40,16 @@ I am a lazy man. I don't want to copy over a new key each time I need to let a n
 ssh-keygen -s ca -I "Some description" -n dacada -V +3550w device.pub
 ```
 
-This uses `ca`, a private key, to sign `device.pub`, a device's public key. The signature expires after around 70 years. What if a key is compromised?
+This uses `ca`, a private key, to sign `device.pub`, a device's public key. The signature expires after around 70 years.
+
+When signing a key, use the `-n` flag to specify the principal(s) for that certificate. The principal must match the username on the target system. For example:
+
+- To sign a key for the `dacada` user: `ssh-keygen -s ca -I "My Laptop" -n dacada -V +3550w laptop.pub`
+- To sign a key for the `llmagent` user: `ssh-keygen -s ca -I "LLM Agent" -n llmagent -V +3550w agent.pub`
+
+The principal is enforced on each host—a certificate signed with `-n dacada` can only authenticate as the `dacada` user, and cannot be used to log in as `llmagent` or any other user, even if the signed certificate is presented.
+
+What if a key is compromised?
 
 1. We replace the CA in `secrets.yml` with a new one (generated like any other key pair, `ssh-keygen -t rsa -b 4096 -f ca`)
 2. We run ansible to make the replacement effective.
