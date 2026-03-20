@@ -4,4 +4,21 @@ wg_server_lan_ip: 192.168.1.41
 wg_server_vpn_ip: 10.69.42.1
 wg_lan_subnet: 192.168.1.0/24
 wg_vpn_subnet: 10.69.42.0/24
+
+# Infrastructure (10.69.42.0/27)
+wg_client_vpn_ip_pihole: 10.69.42.2
+wg_client_vpn_ip_fileserver: 10.69.42.3
+
+# Admin (10.69.42.32/27)
 wg_admin_subnet: 10.69.42.32/27
+wg_client_vpn_ip_admin_1: 10.69.42.33
+wg_client_vpn_ip_admin_2: 10.69.42.34
+
+# Household (10.69.42.64/27)
+wg_household_subnet: 10.69.42.64/27
+wg_client_vpn_ip_household_1: 10.69.42.65
+wg_client_vpn_ip_household_2: 10.69.42.66
+
+# Automation (10.69.42.96/27)
+wg_automation_subnet: 10.69.42.96/27
+wg_client_vpn_ip_llm: 10.69.42.97
