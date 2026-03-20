@@ -44,7 +44,7 @@
     ansible_user: dacada
     ansible_python_interpreter: /usr/bin/python3
     wg_private_key_client: "{{ vpn.wg_private_key_pihole }}"
-    wg_client_vpn_ip: "10.69.42.2"
+    wg_client_vpn_ip: "{{ wg_client_vpn_ip_pihole }}"
   vars_files:
     - ../vars/secrets.yml
   roles:
@@ -64,7 +64,7 @@
     ansible_user: dacada
     ansible_python_interpreter: /usr/bin/python3
     wg_private_key_client: "{{ vpn.wg_private_key_fileserver }}"
-    wg_client_vpn_ip: "10.69.42.3"
+    wg_client_vpn_ip: "{{ wg_client_vpn_ip_fileserver }}"
   vars_files:
     - ../vars/secrets.yml
   roles:
