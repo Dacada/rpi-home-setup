@@ -1,0 +1,17 @@
+[Unit]
+Description=Ansible Playbook Auto-Deploy
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+WorkingDirectory=/opt/rpi-home-setup
+ExecStart=/usr/bin/ansible-playbook -i ansible/inventories/hosts ansible/playbooks/site.yml --vault-password-file=/var/lib/ansible/vault-password
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=ansible-deploy
+Restart=no
+
+[Install]
+WantedBy=multi-user.target
