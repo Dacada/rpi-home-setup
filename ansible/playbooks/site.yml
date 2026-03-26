@@ -36,6 +36,7 @@
     - vpn # ansible/playbooks/roles/{vpn,vpnclient}/defaults/main.yml needs to be updated if this changes
     - logclient
     - monitoring
+    - auto_deploy
 
 - hosts: pihole
   become: true

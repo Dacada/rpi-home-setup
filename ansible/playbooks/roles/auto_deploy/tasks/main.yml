@@ -1,0 +1,62 @@
+---
+- name: Install required packages
+  apt:
+    name:
+      - git
+      - ansible
+      - openssh-client
+    state: present
+
+- name: Create vault password file from secrets
+  copy:
+    content: "{{ secrets_vault_password }}"
+    dest: /var/lib/ansible/vault-password
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Create /opt/rpi-home-setup directory
+  file:
+    path: /opt/rpi-home-setup
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Clone rpi-home-setup repo
+  git:
+    repo: "https://github.com/dacada/rpi-home-setup.git"
+    dest: /opt/rpi-home-setup
+    version: master
+  register: repo_clone
+
+- name: Create ansible-deploy service unit
+  template:
+    src: ansible-deploy.service.j2
+    dest: /etc/systemd/system/ansible-deploy.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload systemd daemon
+
+- name: Create ansible-deploy timer unit
+  template:
+    src: ansible-deploy.timer.j2
+    dest: /etc/systemd/system/ansible-deploy.timer
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload systemd daemon
+
+- name: Flush handlers (reload systemd)
+  meta: flush_handlers
+
+- name: Enable and start ansible-deploy timer
+  service:
+    name: ansible-deploy.timer
+    state: started
+    enabled: yes
+
+- name: Ensure vault password file is synced on each run
+  debug:
+    msg: "Vault password file is in sync. Next auto-deploy will use {{ secrets_vault_password | length }} character password"
