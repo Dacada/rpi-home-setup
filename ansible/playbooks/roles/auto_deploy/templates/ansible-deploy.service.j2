@@ -7,7 +7,6 @@ Wants=network-online.target
 Type=oneshot
 User=root
 WorkingDirectory=/opt/rpi-home-setup
-Environment="ANSIBLE_VAULT_PASSWORD_FILE=/var/lib/ansible/vault-password"
 ExecStart=/usr/bin/ansible-playbook -i ansible/inventories/hosts ansible/playbooks/site.yml --vault-password-file=/var/lib/ansible/vault-password
 StandardOutput=journal
 StandardError=journal

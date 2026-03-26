@@ -56,7 +56,3 @@
     name: ansible-deploy.timer
     state: started
     enabled: yes
-
-- name: Ensure vault password file is synced on each run
-  debug:
-    msg: "Vault password file is in sync. Next auto-deploy will use {{ secrets_vault_password | length }} character password"
