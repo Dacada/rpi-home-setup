@@ -7,6 +7,14 @@
       - openssh-client
     state: present
 
+- name: Ensure vault password directory exists
+  file:
+    path: /var/lib/ansible
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
 - name: Create vault password file from secrets
   copy:
     content: "{{ secrets_vault_password }}"
@@ -27,7 +35,7 @@
   git:
     repo: "https://github.com/dacada/rpi-home-setup.git"
     dest: /opt/rpi-home-setup
-    version: master
+    version: main
   register: repo_clone
 
 - name: Create ansible-deploy service unit
