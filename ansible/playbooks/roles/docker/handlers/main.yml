@@ -1,0 +1,11 @@
+---
+- name: Enable Docker prune timer
+  systemd:
+    name: docker-prune.timer
+    enabled: yes
+    state: started
+    daemon_reload: yes
+
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes
