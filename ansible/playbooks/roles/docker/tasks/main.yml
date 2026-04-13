@@ -46,3 +46,86 @@
     name: docker
     enabled: yes
     state: started
+
+# Move Docker data directory to SSD
+- name: Check /var/lib/docker status
+  stat:
+    path: /var/lib/docker
+  register: docker_lib_check
+
+- name: Check if backup directory exists
+  stat:
+    path: /var/lib/docker.bak
+  register: docker_backup_check
+
+- name: Set migration conditions
+  set_fact:
+    docker_needs_migration: "{{ (docker_lib_check.stat.exists and docker_lib_check.stat.isdir and (not docker_lib_check.stat.islnk)) and (not docker_backup_check.stat.exists) }}"
+    docker_already_migrated: "{{ (docker_lib_check.stat.exists and docker_lib_check.stat.islnk) and (docker_lib_check.stat.lnk_source == docker_data_root) }}"
+
+- name: Fail if Docker migration is in uncertain state
+  fail:
+    msg: "/var/lib/docker exists but is not in an expected state. Manual inspection required."
+  when: (not docker_needs_migration) and (not docker_already_migrated)
+
+- name: Fail if required mountpoint is not available
+  fail:
+    msg: "/mnt/files is not mounted. Cannot proceed with Docker migration. Ensure the SSD is mounted at /mnt/files."
+  when: docker_needs_migration and (ansible_facts['mounts'] | selectattr('mount', 'equalto', '/mnt/files') | list | length == 0)
+
+- name: Migrate Docker data to SSD
+  block:
+    - name: Stop Docker service for migration
+      systemd:
+        name: docker
+        state: stopped
+
+    - name: Create Docker data directory on SSD
+      file:
+        path: "{{ docker_data_root }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0710'
+
+    - name: Copy Docker data to SSD
+      command: "rsync -a /var/lib/docker/ {{ docker_data_root }}/"
+
+    - name: Backup original Docker directory
+      command: "mv /var/lib/docker /var/lib/docker.bak"
+
+    - name: Create symlink from default Docker directory to SSD
+      file:
+        src: "{{ docker_data_root }}"
+        dest: /var/lib/docker
+        state: link
+  when: docker_needs_migration
+
+- name: Ensure Docker service is running
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Deploy Docker prune script
+  template:
+    src: docker-prune.sh.j2
+    dest: /usr/local/bin/docker-prune.sh
+    mode: '0755'
+
+- name: Deploy Docker prune systemd service
+  template:
+    src: docker-prune.service.j2
+    dest: /etc/systemd/system/docker-prune.service
+
+- name: Deploy Docker prune systemd timer
+  template:
+    src: docker-prune.timer.j2
+    dest: /etc/systemd/system/docker-prune.timer
+  notify: Reload systemd daemon
+
+- name: Enable and start Docker prune timer
+  systemd:
+    name: docker-prune.timer
+    enabled: yes
+    state: started
