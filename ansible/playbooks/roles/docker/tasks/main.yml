@@ -60,13 +60,13 @@
 
 - name: Set migration conditions
   set_fact:
-    docker_needs_migration: "{{ (docker_lib_check.stat.exists and docker_lib_check.stat.isdir) and (not docker_backup_check.stat.exists) }}"
+    docker_needs_migration: "{{ (docker_lib_check.stat.exists and docker_lib_check.stat.isdir and (not docker_lib_check.stat.islnk)) and (not docker_backup_check.stat.exists) }}"
     docker_already_migrated: "{{ (docker_lib_check.stat.exists and docker_lib_check.stat.islnk) and (docker_lib_check.stat.lnk_source == docker_data_root) }}"
 
 - name: Fail if Docker migration is in uncertain state
   fail:
     msg: "/var/lib/docker exists but is not in an expected state. Manual inspection required."
-  when: docker_lib_check.stat.exists and (not docker_needs_migration) and (not docker_already_migrated)
+  when: (not docker_needs_migration) and (not docker_already_migrated)
 
 - name: Fail if required mountpoint is not available
   fail:
@@ -89,7 +89,7 @@
         mode: '0710'
 
     - name: Copy Docker data to SSD
-      command: "cp -a /var/lib/docker/* {{ docker_data_root }}/"
+      command: "rsync -a /var/lib/docker/ {{ docker_data_root }}/"
 
     - name: Backup original Docker directory
       command: "mv /var/lib/docker /var/lib/docker.bak"
