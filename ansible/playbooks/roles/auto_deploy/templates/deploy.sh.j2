@@ -1,0 +1,7 @@
+#!/bin/bash
+set -e
+
+cd /opt/rpi-home-setup
+git pull origin main
+
+/usr/bin/ansible-playbook -i ansible/inventories/hosts ansible/playbooks/site.yml --vault-password-file=/var/lib/ansible/vault-password
