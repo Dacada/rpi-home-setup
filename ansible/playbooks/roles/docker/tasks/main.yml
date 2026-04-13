@@ -48,54 +48,64 @@
     state: started
 
 # Move Docker data directory to SSD
-- name: Check if Docker data has already been migrated
+- name: Check /var/lib/docker status
   stat:
-    path: "{{ docker_data_root }}"
-  register: docker_ssd_check
+    path: /var/lib/docker
+  register: docker_lib_check
 
-- name: Stop Docker service for migration
-  systemd:
-    name: docker
-    state: stopped
-  when: docker_ssd_check.stat.exists == false and (ansible_facts['mounts'] | selectattr('mount', 'equalto', '/mnt/files') | list | length > 0)
+- name: Check if backup directory exists
+  stat:
+    path: /var/lib/docker.bak
+  register: docker_backup_check
 
-- name: Create Docker data directory on SSD
-  file:
-    path: "{{ docker_data_root }}"
-    state: directory
-    owner: root
-    group: root
-    mode: '0710'
-  when: docker_ssd_check.stat.exists == false
+- name: Set migration conditions
+  set_fact:
+    docker_needs_migration: "{{ (docker_lib_check.stat.exists and docker_lib_check.stat.isdir) and (not docker_backup_check.stat.exists) }}"
+    docker_already_migrated: "{{ (docker_lib_check.stat.exists and docker_lib_check.stat.islnk) and (docker_lib_check.stat.lnk_target == docker_data_root) }}"
 
-- name: Migrate existing Docker data to SSD (if needed)
+- name: Fail if Docker migration is in uncertain state
+  fail:
+    msg: "/var/lib/docker exists but is not in an expected state (not a directory, not the correct symlink, and backup exists). Manual inspection required."
+  when: not (docker_needs_migration or docker_already_migrated) and docker_lib_check.stat.exists
+
+- name: Migrate Docker data to SSD
   block:
-    - name: Check if default Docker directory has data
-      stat:
-        path: /var/lib/docker
-      register: default_docker_dir
+    - name: Stop Docker service for migration
+      systemd:
+        name: docker
+        state: stopped
+
+    - name: Create Docker data directory on SSD
+      file:
+        path: "{{ docker_data_root }}"
+        state: directory
+        owner: root
+        group: root
+        mode: '0710'
 
     - name: Copy Docker data to SSD
       command: "cp -a /var/lib/docker/* {{ docker_data_root }}/"
-      when: default_docker_dir.stat.exists and (default_docker_dir.stat.isdir)
 
     - name: Backup original Docker directory
       command: "mv /var/lib/docker /var/lib/docker.bak"
-      when: default_docker_dir.stat.exists
-  when: docker_ssd_check.stat.exists == false
 
-- name: Create symlink from default Docker directory to SSD
-  file:
-    src: "{{ docker_data_root }}"
-    dest: /var/lib/docker
-    state: link
-    force: yes
-  when: docker_ssd_check.stat.exists == false
+    - name: Create symlink from default Docker directory to SSD
+      file:
+        src: "{{ docker_data_root }}"
+        dest: /var/lib/docker
+        state: link
 
-- name: Start Docker service
+    - name: Start Docker service
+      systemd:
+        name: docker
+        state: started
+  when: docker_needs_migration and (ansible_facts['mounts'] | selectattr('mount', 'equalto', '/mnt/files') | list | length > 0)
+
+- name: Ensure Docker service is running
   systemd:
     name: docker
     state: started
+    enabled: yes
 
 - name: Deploy Docker prune script
   template:
