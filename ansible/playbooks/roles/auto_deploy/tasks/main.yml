@@ -38,6 +38,14 @@
     version: main
   register: repo_clone
 
+- name: Deploy deploy script
+  template:
+    src: deploy.sh.j2
+    dest: /usr/local/bin/rpi-home-setup-deploy.sh
+    owner: root
+    group: root
+    mode: "0755"
+
 - name: Create ansible-deploy service unit
   template:
     src: ansible-deploy.service.j2
