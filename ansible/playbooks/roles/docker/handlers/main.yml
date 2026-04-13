@@ -1,3 +1,4 @@
 ---
-# Handlers are intentionally minimal or empty.
-# Most systemd operations are handled inline with conditional daemon_reload.
+- name: Reload systemd daemon
+  systemd:
+    daemon_reload: yes

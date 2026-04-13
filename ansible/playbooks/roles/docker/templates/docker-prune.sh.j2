@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 # Prune unused Docker images older than 1 week
 docker image prune --all --filter="until=168h" --force
 echo "Docker prune completed at $(date)" >> /var/log/docker-prune.log

@@ -61,12 +61,17 @@
 - name: Set migration conditions
   set_fact:
     docker_needs_migration: "{{ (docker_lib_check.stat.exists and docker_lib_check.stat.isdir) and (not docker_backup_check.stat.exists) }}"
-    docker_already_migrated: "{{ (docker_lib_check.stat.exists and docker_lib_check.stat.islnk) and (docker_lib_check.stat.lnk_target == docker_data_root) }}"
+    docker_already_migrated: "{{ (docker_lib_check.stat.exists and docker_lib_check.stat.islnk) and (docker_lib_check.stat.lnk_source == docker_data_root) }}"
 
 - name: Fail if Docker migration is in uncertain state
   fail:
-    msg: "/var/lib/docker exists but is not in an expected state (not a directory, not the correct symlink, and backup exists). Manual inspection required."
-  when: not (docker_needs_migration or docker_already_migrated) and docker_lib_check.stat.exists
+    msg: "/var/lib/docker exists but is not in an expected state. Manual inspection required."
+  when: docker_lib_check.stat.exists and (not docker_needs_migration) and (not docker_already_migrated)
+
+- name: Fail if required mountpoint is not available
+  fail:
+    msg: "/mnt/files is not mounted. Cannot proceed with Docker migration. Ensure the SSD is mounted at /mnt/files."
+  when: docker_needs_migration and (ansible_facts['mounts'] | selectattr('mount', 'equalto', '/mnt/files') | list | length == 0)
 
 - name: Migrate Docker data to SSD
   block:
@@ -94,12 +99,7 @@
         src: "{{ docker_data_root }}"
         dest: /var/lib/docker
         state: link
-
-    - name: Start Docker service
-      systemd:
-        name: docker
-        state: started
-  when: docker_needs_migration and (ansible_facts['mounts'] | selectattr('mount', 'equalto', '/mnt/files') | list | length > 0)
+  when: docker_needs_migration
 
 - name: Ensure Docker service is running
   systemd:
@@ -122,12 +122,7 @@
   template:
     src: docker-prune.timer.j2
     dest: /etc/systemd/system/docker-prune.timer
-  register: timer_deployed
-
-- name: Reload systemd daemon if timer changed
-  systemd:
-    daemon_reload: yes
-  when: timer_deployed.changed
+  notify: Reload systemd daemon
 
 - name: Enable and start Docker prune timer
   systemd:
