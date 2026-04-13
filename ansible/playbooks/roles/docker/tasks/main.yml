@@ -97,55 +97,30 @@
     name: docker
     state: started
 
-- name: Create Docker prune script
-  copy:
+- name: Deploy Docker prune script
+  template:
+    src: docker-prune.sh.j2
     dest: /usr/local/bin/docker-prune.sh
     mode: '0755'
-    content: |
-      #!/bin/bash
-      # Prune unused Docker images older than 1 week
-      docker image prune --all --filter="until=168h" --force
-      echo "Docker prune completed at $(date)" >> /var/log/docker-prune.log
-  notify: Enable Docker prune timer
 
-- name: Create systemd service for Docker prune
-  copy:
+- name: Deploy Docker prune systemd service
+  template:
+    src: docker-prune.service.j2
     dest: /etc/systemd/system/docker-prune.service
-    content: |
-      [Unit]
-      Description=Docker Image Prune Service
-      Requires=docker.service
-      After=docker.service
 
-      [Service]
-      Type=oneshot
-      ExecStart=/usr/local/bin/docker-prune.sh
-      StandardOutput=journal
-      StandardError=journal
-
-      [Install]
-      WantedBy=multi-user.target
-  notify: Reload systemd daemon
-
-- name: Create systemd timer for Docker prune
-  copy:
+- name: Deploy Docker prune systemd timer
+  template:
+    src: docker-prune.timer.j2
     dest: /etc/systemd/system/docker-prune.timer
-    content: |
-      [Unit]
-      Description=Weekly Docker Image Prune Timer
-      Requires=docker-prune.service
+  register: timer_deployed
 
-      [Timer]
-      OnCalendar=weekly
-      Persistent=true
-
-      [Install]
-      WantedBy=timers.target
-  notify: Reload systemd daemon
+- name: Reload systemd daemon if timer changed
+  systemd:
+    daemon_reload: yes
+  when: timer_deployed.changed
 
 - name: Enable and start Docker prune timer
   systemd:
     name: docker-prune.timer
     enabled: yes
     state: started
-    daemon_reload: yes
