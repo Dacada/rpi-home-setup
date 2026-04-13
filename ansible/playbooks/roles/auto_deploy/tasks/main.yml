@@ -31,11 +31,12 @@
     group: root
     mode: "0755"
 
-- name: Clone rpi-home-setup repo
+- name: Clone/update rpi-home-setup repo
   git:
     repo: "https://github.com/dacada/rpi-home-setup.git"
     dest: /opt/rpi-home-setup
     version: main
+    update: yes
   register: repo_clone
 
 - name: Create ansible-deploy service unit
