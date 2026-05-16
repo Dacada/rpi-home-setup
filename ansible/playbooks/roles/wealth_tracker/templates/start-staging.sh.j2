@@ -27,8 +27,8 @@ done
 # Require image tag
 if [ -z "$TAG" ]; then
     echo "Usage: $0 [--preserve-db] <image-tag>"
-    echo "Example: $0 registry.gitlab.com/dacada/wealth-tracker:abc123def456"
-    echo "Example: $0 --preserve-db registry.gitlab.com/dacada/wealth-tracker:abc123def456"
+    echo "Example: $0 0123456789abcdef0123456789abcdef01234567"
+    echo "Example: $0 --preserve-db 0123456789abcdef0123456789abcdef01234567"
     exit 1
 fi
 
