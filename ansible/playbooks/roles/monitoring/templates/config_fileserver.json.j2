@@ -21,14 +21,14 @@
             "alarms": [
                 {
                     "name": "Abnormal",
-                    "count": 5,
+                    "count": 1000,
                     "value": {{ ansible_facts['processor_vcpus'] / 2 }},
                     "exceedance": "OVER",
                     "reminder_age": "PT24H"
                 },
                 {
                     "name": "Critical",
-                    "count": 5,
+                    "count": 100,
                     "value": {{ ansible_facts['processor_vcpus'] }},
                     "exceedance": "OVER",
                     "reminder_age": "PT1H"
