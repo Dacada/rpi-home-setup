@@ -1,0 +1,27 @@
+---
+- name: Install required packages
+  apt:
+    name:
+      - syncthing
+    state: present
+
+- name: Create Syncthing service user
+  ansible.builtin.user:
+    name: syncthing-user
+    system: true
+    create_home: true
+    shell: /usr/sbin/nologin
+
+- name: Create Syncthing data directory
+  ansible.builtin.file:
+    path: /mnt/files/syncthing
+    state: directory
+    owner: syncthing-user
+    group: syncthing-user
+    mode: "0755"
+
+- name: Enable and start Syncthing service
+  ansible.builtin.systemd:
+    name: syncthing@syncthing-user
+    enabled: true
+    state: started

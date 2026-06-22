@@ -193,6 +193,41 @@ TCP and UDP ports NATed to the fileserver, check Deluge config for the exact one
 * WAN port 42420 for the ssh into the LAN port 22 of the bastion
 * WAN and LAN port 51820 for the VPN into the bastion
 
+# Syncthing Setup
+
+## Initial Access
+
+Access the Syncthing UI through an SSH tunnel:
+
+```bash
+ssh -L 8384:localhost:8384 fileserver
+```
+
+Then open:
+
+```
+http://localhost:8384
+```
+
+## UI Configuration
+
+Configure the GUI username as `sync`, set the GUI password, disable "Start Browser", and change the GUI listen address to `0.0.0.0:8384`. Verify that the UI is reachable at `http://<fileserver-ip>:8384`, then the SSH tunnel is no longer required.
+
+## Folder Setup
+
+Delete the default folder.
+
+## Device Setup
+
+For each existing device (desktop, laptop, phone), add the `fileserver` device and accept the request on the fileserver UI. Share the existing Syncthing folder with `fileserver` and accept the folder on the fileserver UI, using `/mnt/files/syncthing` as the folder path.
+
+The final state should be a single shared folder with all devices participating:
+
+* desktop
+* laptop
+* phone
+* fileserver
+
 # TODO
 
 In this order:
