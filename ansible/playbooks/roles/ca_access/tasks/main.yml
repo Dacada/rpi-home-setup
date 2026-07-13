@@ -37,11 +37,3 @@
     owner: root
     group: root
     mode: '0644'
-
-- name: Create principals file for llmagent
-  copy:
-    content: "llmagent\n"
-    dest: /etc/ssh/principals/llmagent
-    owner: root
-    group: root
-    mode: '0644'
