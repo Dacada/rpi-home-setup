@@ -27,15 +27,3 @@
     update_cache: yes
     upgrade: dist
     autoremove: yes
-
-# Logs aren't persisted by journald, persistent logs are sent over the wire to the log server (if we have the logclient or logserver role)
-- name: Configure RAM-based logging
-  copy:
-    dest: /etc/systemd/journald.conf
-    content: |
-      [Journal]
-      Storage=volatile
-      RuntimeMaxUse=30M
-      MaxFileSec=1week
-      SystemMaxUse=50M
-  notify: Restart journald

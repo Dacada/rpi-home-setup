@@ -80,3 +80,19 @@
     - wealth_tracker
     - gitlab_runner
     - syncthing
+
+- hosts: offsite
+  become: true
+  vars:
+    ansible_host: "{{ offsite_public_host }}"
+    identity_ssh_key: "{{ ssh_keys.offsite.private_key }}"
+    ansible_user: dacada
+    ansible_python_interpreter: /usr/bin/python3
+  vars_files:
+    - ../vars/secrets.yml
+  roles:
+    - common
+    - auto_upgrades
+    - ca_access
+    #- monitoring
+    #- remote_backups

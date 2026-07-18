@@ -4,6 +4,8 @@ This repository includes scripts and documentation to set up the Raspberry Pi th
 
 # Initial setup
 
+## Raspberry Pi
+
 The Raspberry Pi need some initial manual configuration.
 
 1. Burn Raspbian into the SD card (`rpi-imager` in whatever package manager, run it under `sudo -E`, remember to select a headless image)
@@ -14,7 +16,7 @@ The Raspberry Pi need some initial manual configuration.
      - fileserver
    - A username (dacada) and password (check password manager, different for each device)
    - The right locale and keyboard layout (just in case we need to actually physically log in)
-   - Enable ssh with the appropriate public key (check the ansible vault in the fileserver). The format of the input
+   - Enable ssh with the automation public key (check the ansible vault in the fileserver). The format of the input
      should be: `from="192.168.1.0/24" THE KEY HERE`. That option at the start may make it just slightly more secure?
    - Disable telemetry
 3. Configure in a static IP address. Mount /dev/sdX1 and edit cmdline.txt to put the following at the end:
@@ -31,6 +33,46 @@ ip=192.168.1.XXX::192.168.1.1:255.255.255.0::eth0:off
 +------------+---------------+
 4. Ensure the ansible vault is in the correct path. Copy it over from the fileserver if needed (copy it to `ansible/vars/secrets.yml`). If it has been lost, you will need to create a new one! Check the section about creating a new ansible vault.
 5. Run Ansible: `ansible-playbook -i ansible/inventories/hosts ansible/playbooks/site.yml --ask-vault-pass` (the password is, of course, in your password manager)
+
+## Offsite server
+
+Set the server into a baseline Debian server (latest Stable). Reset the root password. Log in via console (ssh won't allow root password login). Ensure we allow ssh ingress via IPv4 at least. And allow ingress via whichever port the backup solution wants to use (TBD).
+
+Set up the server, as root:
+```bash
+# setup dacada user with password from password manager and sudo access
+adduser dacada
+usermod -aG sudo dacada
+echo "dacada ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/010_pi-nopasswd
+
+# install the automation public ssh key
+install -d -m 700 -o dacada -g dacada /home/dacada/.ssh
+cat >> /home/dacada/.ssh/authorized_keys  # enter the public key here
+chown dacada:dacada /home/dacada/.ssh/authorized_keys
+chmod 600 /home/dacada/.ssh/authorized_keys
+
+# set hostname
+hostnamectl hostname offsite
+vim /etc/hosts  # optional: to avoid complaints about offsite being an unknown host
+
+# harden ssh
+vim /etc/ssh/sshd_config
+systemctl reload ssh
+```
+
+SSH hardening options:
+
+```config
+PermitRootLogin no
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+ChallengeResponseAuthentication no
+PubkeyAuthentication yes
+UsePAM yes
+```
+
+Verify ssh and sudo access with the automation key. Remember to set the static IP of the server to the correct DNS record. That DNS record is used throughout here (it is actually in the secret vars for extra safety).
+
 
 # Trusting keys
 

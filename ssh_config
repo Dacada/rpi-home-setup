@@ -11,7 +11,7 @@ Host bastion-wan
   User dacada
   IdentityFile ~/.ssh/id_ed25519
   CertificateFile ~/.ssh/id_ed25519-cert.pub
-  Port 18561
+  Port [REDACTED]
   IdentitiesOnly yes
 
 Host fileserver-lan
@@ -36,3 +36,11 @@ Host pihole-wan
   HostName 192.168.1.72
   User dacada
   ProxyJump bastion-wan
+
+Host offsite
+  HostName [REDACTED]
+  User dacada
+  IdentityFile ~/.ssh/id_ed25519
+  CertificateFile ~/.ssh/id_ed25519-cert.pub
+  Port 22
+  IdentitiesOnly yes

@@ -1,4 +1,16 @@
 ---
+# Logs aren't persisted by journald, persistent logs are sent over the wire to the log server
+- name: Configure RAM-based logging
+  copy:
+    dest: /etc/systemd/journald.conf
+    content: |
+      [Journal]
+      Storage=volatile
+      RuntimeMaxUse=30M
+      MaxFileSec=1week
+      SystemMaxUse=50M
+  notify: Restart journald
+
 - name: Ensure rsyslog is installed
   apt:
     name: rsyslog
