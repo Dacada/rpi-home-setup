@@ -36,7 +36,11 @@ ip=192.168.1.XXX::192.168.1.1:255.255.255.0::eth0:off
 
 ## Offsite server
 
-Set the server into a baseline Debian server (latest Stable). Reset the root password. Log in via console (ssh won't allow root password login). Ensure we allow ssh ingress via IPv4 at least. And allow ingress via whichever port the backup solution wants to use (TBD).
+Set the server into a baseline Debian server (latest Stable). Reset the root password. Log in via console (ssh won't allow root password login). Ensure we allow ingress via IPv4 for...
+
+- ssh (port 22)
+- NOT monitoring dashboard (intended way is to create an ssh tunnel as it should only be acessed by localhost)
+- back up solution TBD
 
 Set up the server, as root:
 ```bash

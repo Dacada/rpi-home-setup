@@ -4,7 +4,10 @@
     name:
       - git
       - python3-pip
+      - python3-venv
+      - python3-dev
       - cmake
+      - build-essential
       - libdbus-1-dev
       - libglib2.0-dev
     state: present
@@ -21,7 +24,7 @@
   pip:
     requirements: /opt/simpmon/requirements.txt
     virtualenv: /opt/simpmon/.venv
-    virtualenv_command: "/usr/bin/python -m venv"
+    virtualenv_command: "/usr/bin/python3 -m venv"
 
 - name: Copy simpmon.service
   template:

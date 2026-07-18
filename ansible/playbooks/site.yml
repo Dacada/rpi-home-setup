@@ -94,5 +94,5 @@
     - common
     - auto_upgrades
     - ca_access
-    #- monitoring
+    - monitoring
     #- remote_backups
