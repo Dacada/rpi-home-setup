@@ -1,0 +1,64 @@
+---
+- name: Install restic
+  ansible.builtin.package:
+    name: restic
+    state: present
+
+- name: Create restic configuration directory
+  ansible.builtin.file:
+    path: /var/lib/restic
+    state: directory
+    owner: "{{ restic_user }}"
+    group: "{{ restic_group }}"
+    mode: "0700"
+
+- name: Install restic environment
+  ansible.builtin.template:
+    src: restic.env.j2
+    dest: "{{ restic_env_file }}"
+    owner: "{{ restic_user }}"
+    group: "{{ restic_group }}"
+    mode: "0600"
+
+- name: Check restic repository
+  ansible.builtin.command:
+    cmd: restic snapshots
+  environment: "{{ restic_command_environment }}"
+  become: true
+  become_user: "{{ restic_user }}"
+  register: restic_repository_check
+  changed_when: false
+  failed_when: false
+
+- name: Initialize restic repository
+  ansible.builtin.command:
+    cmd: restic init
+  environment: "{{ restic_command_environment }}"
+  become: true
+  become_user: "{{ restic_user }}"
+  when: restic_repository_check.rc != 0
+
+- name: Install restic backup service
+  ansible.builtin.template:
+    src: restic-backup.service.j2
+    dest: /etc/systemd/system/restic-backup.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload systemd
+
+- name: Install restic backup timer
+  ansible.builtin.template:
+    src: restic-backup.timer.j2
+    dest: /etc/systemd/system/restic-backup.timer
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Reload systemd
+
+- name: Enable restic backup timer
+  ansible.builtin.systemd_service:
+    name: restic-backup.timer
+    enabled: true
+    state: started
+    daemon_reload: true

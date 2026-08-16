@@ -1,0 +1,17 @@
+---
+restic_user: smbuser
+restic_group: smbusers
+
+restic_exclude_if_present: ".restic-exclude"
+
+restic_backup_calendar: "*-*-01 03:00:00"
+
+restic_config_dir: "/var/lib/restic"
+
+restic_env_file: "/var/lib/restic/env"
+
+restic_command_environment:
+  RESTIC_REPOSITORY: "{{ restic.repository }}"
+  RESTIC_PASSWORD: "{{ restic.password }}"
+  AWS_ACCESS_KEY_ID: "{{ restic.aws_access_key_id }}"
+  AWS_SECRET_ACCESS_KEY: "{{ restic.aws_secret_access_key }}"

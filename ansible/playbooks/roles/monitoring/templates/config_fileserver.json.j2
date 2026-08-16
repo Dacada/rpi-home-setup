@@ -237,6 +237,20 @@
             "service": "rsyslog"
         },
         {
+            "name": "SYSTEMD_ONESHOT",
+            "title": "restic-backup.service last execution",
+            "alarms": [
+                {
+                    "name": "Failed",
+                    "count": 1,
+                    "value": 3024000,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT24H"
+                }
+            ],
+            "service": "restic-backup"
+        },
+        {
             "name": "PING",
             "title": "Ping to internet",
             "alarms": [

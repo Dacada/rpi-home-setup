@@ -80,6 +80,7 @@
     - wealth_tracker
     - gitlab_runner
     - syncthing
+    - remote_backups
 
 - hosts: offsite
   become: true
@@ -95,4 +96,3 @@
     - auto_upgrades
     - ca_access
     - monitoring
-    #- remote_backups
