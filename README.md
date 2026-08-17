@@ -275,7 +275,26 @@ The final state should be a single shared folder with all devices participating:
 
 # TODO
 
-In this order:
-
-- Set up and expose webserver on bastion with landing page that can reverse proxy to other devices (Homepage?)
-- Biwarden/vaultwarden?
+- Set up internal DNS through pihole
+  - Add a record for each service
+  - Point the records to the right machine
+- Set up reverse proxy
+  - Run a reverse proxy on every machine
+  - Listen on port 80
+  - Route HTTP requests to the appropriate port
+  - Keep non-HTTP services separate from this
+  - No certs yet, only visible from private networks
+- Containerize services
+  - Each service should run in a container where possible
+  - Keep dependencies and OS packages isolated
+  - Avoid exposing service ports directly
+- Redesign the VPN
+  - Single router machine on the LAN and single remote machine as a VPS
+  - LAN router allows VPN members to reach the LAN, including the DNS
+    - Use NAT
+  - VPS also allows to route to the internet as a VPN exit node
+    - Also NATted
+  - No other machines (other than roaming machines) need to be VPN nodes
+- Rename machines
+  - Replace role-based hostnames with unrelated names
+  - Update all references to old hostnames in this document
