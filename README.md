@@ -34,50 +34,6 @@ ip=192.168.1.XXX::192.168.1.1:255.255.255.0::eth0:off
 4. Ensure the ansible vault is in the correct path. Copy it over from the fileserver if needed (copy it to `ansible/vars/secrets.yml`). If it has been lost, you will need to create a new one! Check the section about creating a new ansible vault.
 5. Run Ansible: `ansible-playbook -i ansible/inventories/hosts ansible/playbooks/site.yml --ask-vault-pass` (the password is, of course, in your password manager)
 
-## Offsite server
-
-Set the server into a baseline Debian server (latest Stable). Reset the root password. Log in via console (ssh won't allow root password login). Ensure we allow ingress via IPv4 for...
-
-- ssh (port 22)
-- NOT monitoring dashboard (intended way is to create an ssh tunnel as it should only be acessed by localhost)
-- back up solution TBD
-
-Set up the server, as root:
-```bash
-# setup dacada user with password from password manager and sudo access
-adduser dacada
-usermod -aG sudo dacada
-echo "dacada ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/010_pi-nopasswd
-
-# install the automation public ssh key
-install -d -m 700 -o dacada -g dacada /home/dacada/.ssh
-cat >> /home/dacada/.ssh/authorized_keys  # enter the public key here
-chown dacada:dacada /home/dacada/.ssh/authorized_keys
-chmod 600 /home/dacada/.ssh/authorized_keys
-
-# set hostname
-hostnamectl hostname offsite
-vim /etc/hosts  # optional: to avoid complaints about offsite being an unknown host
-
-# harden ssh
-vim /etc/ssh/sshd_config
-systemctl reload ssh
-```
-
-SSH hardening options:
-
-```config
-PermitRootLogin no
-PasswordAuthentication no
-KbdInteractiveAuthentication no
-ChallengeResponseAuthentication no
-PubkeyAuthentication yes
-UsePAM yes
-```
-
-Verify ssh and sudo access with the automation key. Remember to set the static IP of the server to the correct DNS record. That DNS record is used throughout here (it is actually in the secret vars for extra safety).
-
-
 # Trusting keys
 
 I am a lazy man. I don't want to copy over a new key each time I need to let a new device into each of my devices. Instead, we're using a **Certificate Authority**. Within the `secrets.yml` file in the fileserver we have the key pair for the CA. To let a new device into the bastion, simply sign its public key using the CA's private key.
@@ -288,13 +244,6 @@ The final state should be a single shared folder with all devices participating:
   - Each service should run in a container where possible
   - Keep dependencies and OS packages isolated
   - Avoid exposing service ports directly
-- Redesign the VPN
-  - Single router machine on the LAN and single remote machine as a VPS
-  - LAN router allows VPN members to reach the LAN, including the DNS
-    - Use NAT
-  - VPS also allows to route to the internet as a VPN exit node
-    - Also NATted
-  - No other machines (other than roaming machines) need to be VPN nodes
 - Rename machines
   - Replace role-based hostnames with unrelated names
   - Update all references to old hostnames in this document
