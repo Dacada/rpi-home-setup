@@ -9,8 +9,8 @@ PostDown = iptables -t nat -D POSTROUTING -s {{ wg_admin_subnet }} -o {{ wg_netw
 
 # Infrastructure (10.69.42.0/27)
 [Peer]
-PublicKey = {{ vpn.wg_public_key_pihole }}
-AllowedIPs = {{ wg_client_vpn_ip_pihole }}/32
+PublicKey = {{ vpn.wg_public_key_tonic }}
+AllowedIPs = {{ wg_client_vpn_ip_tonic }}/32
 PersistentKeepalive = 25
 
 [Peer]
@@ -39,4 +39,3 @@ PersistentKeepalive = 25
 PublicKey = {{ vpn.wg_public_key_client_4 }}
 AllowedIPs = {{ wg_client_vpn_ip_household_2 }}/32
 PersistentKeepalive = 25
-

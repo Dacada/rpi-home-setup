@@ -22,6 +22,15 @@
     state: present
     key: "{{ ssh_keys.bastion.public_key }}"
 
+- name: Configure passwordless sudo
+  copy:
+    dest: /etc/sudoers.d/90-ansible
+    content: "{{ ansible_user }} ALL=(ALL) NOPASSWD: ALL\n"
+    owner: root
+    group: root
+    mode: '0440'
+    validate: '/usr/sbin/visudo -cf %s'
+
 - name: Ensure system is up to date
   apt:
     update_cache: yes

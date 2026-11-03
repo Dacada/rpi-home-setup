@@ -8,31 +8,28 @@ This repository includes scripts and documentation to set up the Raspberry Pi th
 
 The Raspberry Pi need some initial manual configuration.
 
-1. Burn Raspbian into the SD card (`rpi-imager` in whatever package manager, run it under `sudo -E`, remember to select a headless image)
-2. Set special settings. We want...
-   - A hostname, one of:
-     - bastion
-     - pihole
-     - fileserver
+1. Burn Raspbian into the SD card (`rpi-imager` in whatever package manager, run it under `sudo -E` if running via CLI, remember to select a headless image)
+2. As for settings. We want...
+   - A hostname, as per my hardware spreadsheet.
    - A username (dacada) and password (check password manager, different for each device)
    - The right locale and keyboard layout (just in case we need to actually physically log in)
-   - Enable ssh with the automation public key (check the ansible vault in the fileserver). The format of the input
-     should be: `from="192.168.1.0/24" THE KEY HERE`. That option at the start may make it just slightly more secure?
-   - Disable telemetry
+   - Enable ssh with the automation public key (check the ansible vault).
 3. Configure in a static IP address. Mount /dev/sdX1 and edit cmdline.txt to put the following at the end:
 ```
 ip=192.168.1.XXX::192.168.1.1:255.255.255.0::eth0:off
 ```
-   Make sure to choose the right static IP
-+------------+---------------+
-| hostname   | ip            |
-+------------+---------------+
-| bastion    | 192.168.1.41  |
-| pihole     | 192.168.1.72  |
-| fileserver | 192.168.1.103 |
-+------------+---------------+
-4. Ensure the ansible vault is in the correct path. Copy it over from the fileserver if needed (copy it to `ansible/vars/secrets.yml`). If it has been lost, you will need to create a new one! Check the section about creating a new ansible vault.
-5. Run Ansible: `ansible-playbook -i ansible/inventories/hosts ansible/playbooks/site.yml --ask-vault-pass` (the password is, of course, in your password manager)
+   Make sure to choose the right static IP according to the hardware spreadsheet.
+4. Run Ansible
+
+NOTE FOR FIRST TIME SETUP
+
+Passwordless sudo is not set up yet. You need to pass the user's password, as configured above, as well as the vault password (both in password manager). The full incantation should be:
+
+```
+ansible-playbook -i ansible/inventories/hosts ansible/playbooks/site.yml --limit HOSTNAME --ask-vault-pass --ask-become-pass
+```
+
+Followup runs can drop the `--limit HOSTNAME` and `--ask-become-pass` to run for the whole fleet without needing a sudo password.
 
 # Trusting keys
 
@@ -135,7 +132,7 @@ ssh_keys:
       KEY HERE
     public_key: |
       KEY HERE
-  pihole:
+  tonic:
     private_key: |
       KEY HERE
     public_key: |
@@ -169,7 +166,7 @@ In the client, they must have a specific config. Here's an example where...
 [Interface]
 PrivateKey = abc123
 Address = 10.69.42.99/32
-DNS = 10.69.42.2  # Optional, if we want to use the pihole as DNS
+DNS = 10.69.42.2  # Optional, if we want to use the pihole as DNS (assuming it lives in tonic)
 
 [Peer]
 PublicKey = def456

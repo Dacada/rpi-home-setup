@@ -6,7 +6,7 @@ wg_lan_subnet: 192.168.1.0/24
 wg_vpn_subnet: 10.69.42.0/24
 
 # Infrastructure (10.69.42.0/27)
-wg_client_vpn_ip_pihole: 10.69.42.2
+wg_client_vpn_ip_tonic: 10.69.42.2
 wg_client_vpn_ip_fileserver: 10.69.42.3
 
 # Admin (10.69.42.32/27)

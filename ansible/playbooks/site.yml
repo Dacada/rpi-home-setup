@@ -37,13 +37,13 @@
     - monitoring
     - auto_deploy
 
-- hosts: pihole
+- hosts: tonic
   become: true
   vars:
-    identity_ssh_key: "{{ ssh_keys.pihole.private_key }}"
+    identity_ssh_key: "{{ ssh_keys.tonic.private_key }}"
     ansible_user: dacada
     ansible_python_interpreter: /usr/bin/python3
-    wg_private_key_client: "{{ vpn.wg_private_key_pihole }}"
+    wg_private_key_client: "{{ vpn.wg_private_key_tonic }}"
     wg_client_vpn_ip: "10.69.42.2"
   vars_files:
     - ../vars/secrets.yml
@@ -51,8 +51,8 @@
     - common
     - auto_upgrades
     - ca_access
-    - pihole
     - logclient
+    - pihole
     - vpnclient
     - monitoring
 

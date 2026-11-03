@@ -37,3 +37,6 @@
     owner: root
     group: root
     mode: '0644'
+
+- name: Apply pending SSH configuration changes
+  ansible.builtin.meta: flush_handlers
