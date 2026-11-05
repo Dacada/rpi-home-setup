@@ -1,8 +1,8 @@
-[bastion]
+[geode]
 192.168.1.41
 
 [tonic]
 192.168.1.72
 
-[fileserver]
+[haze]
 192.168.1.103

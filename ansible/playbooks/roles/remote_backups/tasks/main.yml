@@ -4,6 +4,11 @@
     name: restic
     state: present
 
+- name: Install ACL support for Ansible privilege escalation
+  ansible.builtin.package:
+    name: acl
+    state: present
+
 - name: Create restic configuration directory
   ansible.builtin.file:
     path: /var/lib/restic
@@ -20,23 +25,24 @@
     group: "{{ restic_group }}"
     mode: "0600"
 
+# if this failed, you may need to manually create the repository
+# the next task commented out is basically what would need to run
+# but we don't want to run it when the command fails for an unrelated reason and the repository actually exists
 - name: Check restic repository
   ansible.builtin.command:
     cmd: restic snapshots
   environment: "{{ restic_command_environment }}"
   become: true
   become_user: "{{ restic_user }}"
-  register: restic_repository_check
   changed_when: false
-  failed_when: false
 
-- name: Initialize restic repository
-  ansible.builtin.command:
-    cmd: restic init
-  environment: "{{ restic_command_environment }}"
-  become: true
-  become_user: "{{ restic_user }}"
-  when: restic_repository_check.rc != 0
+# - name: Initialize restic repository
+#   ansible.builtin.command:
+#     cmd: restic init
+#   environment: "{{ restic_command_environment }}"
+#   become: true
+#   become_user: "{{ restic_user }}"
+#   when: restic_repository_check.rc != 0
 
 - name: Install restic backup service
   ansible.builtin.template:

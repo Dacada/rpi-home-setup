@@ -16,11 +16,11 @@
     group: "{{ ansible_user }}"
   notify: Restart SSH
 
-- name: Add bastion's public key to authorized_keys
+- name: Add geode's public key to authorized_keys
   authorized_key:
     user: "{{ ansible_user }}"
     state: present
-    key: "{{ ssh_keys.bastion.public_key }}"
+    key: "{{ ssh_keys.geode.public_key }}"
 
 - name: Configure passwordless sudo
   copy:

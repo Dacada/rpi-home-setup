@@ -17,10 +17,10 @@
       set_fact:
         ansible_ssh_private_key_file: "/tmp/automation_private_key"
 
-- hosts: bastion
+- hosts: geode
   become: true
   vars:
-    identity_ssh_key: "{{ ssh_keys.bastion.private_key }}"
+    identity_ssh_key: "{{ ssh_keys.geode.private_key }}"
     ansible_user: dacada
     ansible_python_interpreter: /usr/bin/python3
   vars_files:
@@ -56,13 +56,13 @@
     - vpnclient
     - monitoring
 
-- hosts: fileserver
+- hosts: haze
   become: true
   vars:
-    identity_ssh_key: "{{ ssh_keys.fileserver.private_key }}"
+    identity_ssh_key: "{{ ssh_keys.haze.private_key }}"
     ansible_user: dacada
     ansible_python_interpreter: /usr/bin/python3
-    wg_private_key_client: "{{ vpn.wg_private_key_fileserver }}"
+    wg_private_key_client: "{{ vpn.wg_private_key_haze }}"
     wg_client_vpn_ip: "10.69.42.3"
   vars_files:
     - ../vars/secrets.yml

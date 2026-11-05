@@ -1,4 +1,4 @@
-Host bastion-lan
+Host geode-lan
   HostName 192.168.1.41
   User dacada
   IdentityFile ~/.ssh/id_ed25519
@@ -6,7 +6,7 @@ Host bastion-lan
   Port 22
   IdentitiesOnly yes
 
-Host bastion-wan
+Host geode-wan
   HostName [REDACTED]
   User dacada
   IdentityFile ~/.ssh/id_ed25519
@@ -14,7 +14,7 @@ Host bastion-wan
   Port [REDACTED]
   IdentitiesOnly yes
 
-Host fileserver-lan
+Host haze-lan
   HostName 192.168.1.103
   User dacada
   IdentityFile ~/.ssh/id_ed25519
@@ -22,17 +22,17 @@ Host fileserver-lan
   Port 22
   IdentitiesOnly yes
 
-Host fileserver-wan
+Host haze-wan
   HostName 192.168.1.103
   User dacada
-  ProxyJump bastion-wan
+  ProxyJump geode-wan
 
 Host tonic-lan
   HostName 192.168.1.72
   User dacada
-  ProxyJump bastion-lan
+  ProxyJump geode-lan
 
 Host tonic-wan
   HostName 192.168.1.72
   User dacada
-  ProxyJump bastion-wan
+  ProxyJump geode-wan

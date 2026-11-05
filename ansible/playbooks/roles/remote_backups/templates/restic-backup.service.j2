@@ -2,6 +2,7 @@
 Description=Restic backup
 Wants=network-online.target
 After=network-online.target
+RequiresMountsFor=/mnt/files
 
 [Service]
 Type=oneshot

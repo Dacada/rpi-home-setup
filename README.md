@@ -33,7 +33,7 @@ Followup runs can drop the `--limit HOSTNAME` and `--ask-become-pass` to run for
 
 # Trusting keys
 
-I am a lazy man. I don't want to copy over a new key each time I need to let a new device into each of my devices. Instead, we're using a **Certificate Authority**. Within the `secrets.yml` file in the fileserver we have the key pair for the CA. To let a new device into the bastion, simply sign its public key using the CA's private key.
+I am a lazy man. I don't want to copy over a new key each time I need to let a new device into each of my devices. Instead, we're using a **Certificate Authority**. Within the encrypted vault we have the key pair for the CA. To let a new device into the bastion (geode), simply sign its public key using the CA's private key.
 
 ```
 ssh-keygen -s ca -I "Some description" -n dacada -V +3550w device.pub
@@ -122,7 +122,7 @@ ssh_keys:
       KEY HERE
     public_key: |
       KEY HERE
-  bastion:
+  geode:
     private_key: |
       KEY HERE
     public_key: |
@@ -137,7 +137,7 @@ ssh_keys:
       KEY HERE
     public_key: |
       KEY HERE
-  fileserver:
+  haze:
     private_key: |
       KEY HERE
     public_key: |
@@ -180,16 +180,23 @@ Pihole is installed manually, using the instructions on the official website. Ad
 
 # Permissions
 
-The permissions for the fileserver should be every file under the smb user and group, 770 permissions. And for the seedbox, within the directory, everything owned by the deluge running user and group, 775 so others (smb) can read. I couldn't find a good succint way to express this in ansible for existing files, but new files should work like this with the way ansible sets up things.
+The permissions for the fileserver role should be every file under the smb user and group, 770 permissions. And for the seedbox, within the directory, everything owned by the deluge running user and group, 775 so others (smb) can read. I couldn't find a good succint way to express this in ansible for existing files, but new files should work like this with the way ansible sets up things.
+
+All users that matter should be created with stable UID/GID by Ansible already. But they might be claimed already by the default OS image. Good luck with that!
+
+# Docker
+
+Docker state is kept in the external SSD. It should be wiped beforehand if the OS is being recreated from scratch.
 
 # Deluge
 
-TCP and UDP ports NATed to the fileserver, check Deluge config for the exact ones.
+TCP and UDP ports NATed to haze (the fileserver), check Deluge config for the exact ones.
 
 # SSH/VPN NAT
 
-* WAN port 42420 for the ssh into the LAN port 22 of the bastion
-* WAN and LAN port 51820 for the VPN into the bastion
+* WAN port 42420 for the ssh into the LAN port 22 of the bastion (geode)
+* WAN and LAN port 51820 for the VPN into the bastion (geode)
+* These are not really secrets, just random-ish ports to evade most automated bot spam. The services are secure by themselves.
 
 # Syncthing Setup
 
@@ -198,7 +205,7 @@ TCP and UDP ports NATed to the fileserver, check Deluge config for the exact one
 Access the Syncthing UI through an SSH tunnel:
 
 ```bash
-ssh -L 8384:localhost:8384 fileserver
+ssh -L 8384:localhost:8384 haze
 ```
 
 Then open:
@@ -209,7 +216,7 @@ http://localhost:8384
 
 ## UI Configuration
 
-Configure the GUI username as `sync`, set the GUI password, disable "Start Browser", and change the GUI listen address to `0.0.0.0:8384`. Verify that the UI is reachable at `http://<fileserver-ip>:8384`, then the SSH tunnel is no longer required.
+Configure the GUI username as `sync`, set the GUI password, disable "Start Browser", and change the GUI listen address to `0.0.0.0:8384`. Verify that the UI is reachable at `http://<haze-ip>:8384`, then the SSH tunnel is no longer required.
 
 ## Folder Setup
 
@@ -217,30 +224,11 @@ Delete the default folder.
 
 ## Device Setup
 
-For each existing device (desktop, laptop, phone), add the `fileserver` device and accept the request on the fileserver UI. Share the existing Syncthing folder with `fileserver` and accept the folder on the fileserver UI, using `/mnt/files/syncthing` as the folder path.
+For each existing device (desktop, laptop, phone), add the `haze` device and accept the request on the haze UI. Share the existing Syncthing folder with `haze` and accept the folder on the haze UI, using `/mnt/files/syncthing` as the folder path.
 
 The final state should be a single shared folder with all devices participating:
 
 * desktop
 * laptop
 * phone
-* fileserver
-
-# TODO
-
-- Set up internal DNS through pihole
-  - Add a record for each service
-  - Point the records to the right machine
-- Set up reverse proxy
-  - Run a reverse proxy on every machine
-  - Listen on port 80
-  - Route HTTP requests to the appropriate port
-  - Keep non-HTTP services separate from this
-  - No certs yet, only visible from private networks
-- Containerize services
-  - Each service should run in a container where possible
-  - Keep dependencies and OS packages isolated
-  - Avoid exposing service ports directly
-- Rename machines
-  - Replace role-based hostnames with unrelated names
-  - Update all references to old hostnames in this document
+* haze

@@ -21,6 +21,22 @@
   args:
     creates: /etc/systemd/system/gitlab-runner.service
 
+- name: Configure GitLab Runner
+  ansible.builtin.template:
+    src: config.toml.j2
+    dest: /etc/gitlab-runner/config.toml
+    owner: root
+    group: root
+    mode: "0600"
+  no_log: true
+  notify: Restart GitLab Runner
+
+- name: Enable and start GitLab Runner
+  ansible.builtin.systemd_service:
+    name: gitlab-runner
+    enabled: true
+    state: started
+
 # if this fails, start the service manually, make sure the runner works, at worst probably gotta re-register the runner?
 # if the config is recreated, you will need to set the docker runner to allow docker out of docker
 # - privileged = false
@@ -28,6 +44,10 @@
 # - volumes = ["/cache"]
 # + volumes = ["/var/run/docker.sock:/var/run/docker.sock", "/cache"]
 # maybe in the future i can fully automate this config, but im not sure how much the manually ran commands do other than setting up the token
+
+# new me several months later: i think just setting up the config file should work
+# if it doesn't and this step still fails, know that this used to stop and installing the runner and had the above comment just before the next step which fails
+
 - name: Check myservice status
   command: systemctl is-active gitlab-runner
   register: gitlab_runner_status

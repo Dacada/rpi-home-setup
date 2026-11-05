@@ -1,4 +1,22 @@
 ---
+- name: Create Deluge group
+  ansible.builtin.group:
+    name: debian-deluged
+    gid: 113
+    system: true
+    state: present
+
+- name: Create Deluge user
+  ansible.builtin.user:
+    name: debian-deluged
+    uid: 107
+    group: debian-deluged
+    system: true
+    home: /var/lib/deluged
+    create_home: true
+    shell: /usr/sbin/nologin
+    state: present
+
 - name: Ensure deluge is installed
   apt:
     name:

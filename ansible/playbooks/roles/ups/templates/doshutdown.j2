@@ -24,9 +24,9 @@ for device in "${DEVICES[@]}"; do
   fi
 done
 
-# Final notification to users: bastion is shutting down
+# Final notification to users: geode is shutting down
 echo "Shutting down this machine!" | ${WALL}
-echo "$(date) - Shutting down bastion (this machine)" >> $LOGFILE
+echo "$(date) - Shutting down geode (this machine)" >> $LOGFILE
 
-# Shutdown the bastion itself
+# Shutdown geode itself
 shutdown now

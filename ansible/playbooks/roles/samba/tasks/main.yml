@@ -7,11 +7,13 @@
 - name: Create smbusers group
   group:
     name: smbusers
+    gid: 1001
     state: present
 
 - name: Create smbuser user
   user:
     name: smbuser
+    uid: 1001
     group: smbusers
     shell: /sbin/nologin
     home: /nonexistent

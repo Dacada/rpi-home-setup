@@ -5,9 +5,18 @@
       - syncthing
     state: present
 
+- name: Create Syncthing group
+  ansible.builtin.group:
+    name: syncthing-user
+    gid: 1005
+    system: true
+    state: present
+
 - name: Create Syncthing service user
   ansible.builtin.user:
     name: syncthing-user
+    uid: 1005
+    group: syncthing-user
     system: true
     create_home: true
     shell: /usr/sbin/nologin
