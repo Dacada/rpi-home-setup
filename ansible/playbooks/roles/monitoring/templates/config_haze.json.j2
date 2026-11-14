@@ -335,6 +335,69 @@
             "ip": "192.168.1.103"
         },
         {
+            "name": "PING",
+            "title": "Ping to geode (VPN)",
+            "alarms": [
+                {
+                    "name": "Slow",
+                    "count": 10,
+                    "value": 25,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT12H"
+                },
+                {
+                    "name": "Failing",
+                    "count": 10,
+                    "value": -0.5,
+                    "exceedance": "UNDER",
+                    "reminder_age": "PT12H"
+                }
+            ],
+            "ip": "10.69.42.1"
+        },
+        {
+            "name": "PING",
+            "title": "Ping to tonic (VPN)",
+            "alarms": [
+                {
+                    "name": "Slow",
+                    "count": 10,
+                    "value": 25,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT12H"
+                },
+                {
+                    "name": "Failing",
+                    "count": 10,
+                    "value": -0.5,
+                    "exceedance": "UNDER",
+                    "reminder_age": "PT12H"
+                }
+            ],
+            "ip": "10.69.42.2"
+        },
+        {
+            "name": "PING",
+            "title": "Ping to haze (VPN)",
+            "alarms": [
+                {
+                    "name": "Slow",
+                    "count": 10,
+                    "value": 25,
+                    "exceedance": "OVER",
+                    "reminder_age": "PT12H"
+                },
+                {
+                    "name": "Failing",
+                    "count": 10,
+                    "value": -0.5,
+                    "exceedance": "UNDER",
+                    "reminder_age": "PT12H"
+                }
+            ],
+            "ip": "10.69.42.3"
+        },
+        {
             "name": "PACKAGE_MANAGER",
             "title": "Pending package upgrades",
             "alarms": [
