@@ -178,6 +178,12 @@ AllowedIPs = 192.168.1.0/24, 10.69.42.0/24
 
 Pihole is installed manually, using the instructions on the official website. Additionally, it must be configured (through the Web UI) to serve requests from any network. This is vital to get it working from the VPN, and safe as long as I never expose the service out on the Internet.
 
+# DNS
+
+Internal DNS is setup via this playbook and includes basically every interesting service, plus hostnames for connecting specifically to that device.
+
+Public DNS includes ssh and vpn, outside of the scope of this playbook, set up manually.
+
 # Permissions
 
 The permissions for the fileserver role should be every file under the smb user and group, 770 permissions. And for the seedbox, within the directory, everything owned by the deluge running user and group, 775 so others (smb) can read. I couldn't find a good succint way to express this in ansible for existing files, but new files should work like this with the way ansible sets up things.

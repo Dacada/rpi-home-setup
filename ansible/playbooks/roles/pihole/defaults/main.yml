@@ -1,0 +1,12 @@
+---
+dns_services:
+  monitor-geode: geode
+  monitor-tonic: tonic
+  monitor-haze: haze
+
+  bastion: geode
+  pihole: tonic
+  fileserver: haze
+
+  seedbox: haze
+  wealth-tracker: haze

@@ -24,3 +24,37 @@
     group: root
     mode: '0644'
   notify: Restart rsyslog
+
+- name: Enable custom dnsmasq configuration
+  ansible.builtin.lineinfile:
+    path: /etc/pihole/pihole.toml
+    regexp: '^\s*etc_dnsmasq_d\s*='
+    line: '  etc_dnsmasq_d = true'
+    backrefs: true
+  notify: Restart Pi-hole DNS
+
+- name: Verify custom dnsmasq configuration is enabled
+  ansible.builtin.command:
+    argv:
+      - grep
+      - -Eq
+      - '^\s*etc_dnsmasq_d\s*=\s*true\s*(#.*)?$'
+      - /etc/pihole/pihole.toml
+  register: dnsmasq_config_check
+  changed_when: false
+  failed_when: false
+
+- name: Fail if custom dnsmasq configuration is not enabled
+  ansible.builtin.assert:
+    that:
+      - dnsmasq_config_check.rc == 0
+    fail_msg: "Pi-hole must have misc.etc_dnsmasq_d = true in /etc/pihole/pihole.toml"
+
+- name: Deploy local DNS records
+  ansible.builtin.template:
+    src: local-dns.conf.j2
+    dest: /etc/dnsmasq.d/50-local-dns.conf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: Restart Pi-hole DNS

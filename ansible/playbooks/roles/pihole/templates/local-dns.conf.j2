@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+
+# Machine addresses
+{% for machine in ['geode', 'tonic', 'haze'] %}
+host-record={{ machine }}.{{ dns.suffix }},{{ groups[machine][0] }}
+{% endfor %}
+
+# Service aliases
+{% for service, machine in dns_services | dictsort %}
+cname={{ service }}.{{ dns.suffix }},{{ machine }}.{{ dns.suffix }}
+{% endfor %}
