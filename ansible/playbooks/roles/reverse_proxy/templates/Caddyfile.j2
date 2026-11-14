@@ -1,0 +1,5 @@
+{% for prefix, port in reverse_proxy.get(ansible_facts['hostname'], {}).items() %}
+http://{{ prefix }}.{{ dns.suffix }} {
+    reverse_proxy localhost:{{ port }}
+}
+{% endfor %}

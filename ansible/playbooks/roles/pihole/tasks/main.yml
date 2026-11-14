@@ -53,8 +53,8 @@
 - name: Configure HTTP port
   ansible.builtin.replace:
     path: /etc/pihole/pihole.toml
-    after: '^\[webserver\]$'
-    before: '^\['
+    after: '(?m:^[ \t]*\[webserver\][ \t]*(?:#.*)?$)'
+    before: '(?m:^[ \t]*\[)|\Z'
     regexp: '^\s*port\s*=.*$'
     replace: '  port = "8053"'
   notify: Restart Pi-hole DNS

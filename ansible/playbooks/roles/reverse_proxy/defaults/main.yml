@@ -1,0 +1,11 @@
+---
+reverse_proxy:
+  geode:
+    monitor-geode: 8080
+  tonic:
+    monitor-tonic: 8080
+    pihole-admin: 8053
+  haze:
+    monitor-haze: 8080
+    seedbox: 8112
+    wealth-tracker: 3000

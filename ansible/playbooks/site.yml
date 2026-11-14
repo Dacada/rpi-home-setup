@@ -36,6 +36,7 @@
     - logclient
     - monitoring
     - auto_deploy
+    - reverse_proxy
 
 - hosts: tonic
   become: true
@@ -55,6 +56,7 @@
     - pihole
     - vpnclient
     - monitoring
+    - reverse_proxy
 
 - hosts: haze
   become: true
@@ -81,3 +83,4 @@
     - gitlab_runner
     - syncthing
     - remote_backups
+    - reverse_proxy
