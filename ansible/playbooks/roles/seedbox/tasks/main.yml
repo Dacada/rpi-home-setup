@@ -25,17 +25,8 @@
     state: present
     update_cache: yes
 
-- name: Copy deluged configuration
-  template:
-    src: core.conf.j2
-    dest: "/var/lib/deluged/config/core.conf"
-  notify: Restart deluged completely
-
-- name: Copy deluge-web configuration
-  template:
-    src: web.conf.j2
-    dest: "/var/lib/deluged/config/web.conf"
-  notify: Restart deluged completely
+- name: Configure deluge
+  ansible.builtin.import_tasks: update_deluge_config.yml
 
 - name: Add deluge user to the smb users group
   user:

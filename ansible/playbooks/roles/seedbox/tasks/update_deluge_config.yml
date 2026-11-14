@@ -1,0 +1,62 @@
+---
+- name: Check whether Deluge configuration would change
+  ansible.builtin.template:
+    src: core.conf.j2
+    dest: /var/lib/deluged/config/core.conf
+    owner: debian-deluged
+    group: debian-deluged
+    mode: '0644'
+  check_mode: true
+  register: deluge_config_check
+
+- name: Deploy changed Deluge configuration
+  when: deluge_config_check.changed
+  block:
+    - name: Stop deluged
+      ansible.builtin.systemd:
+        name: deluged.service
+        state: stopped
+
+    - name: Deploy Deluge configuration
+      ansible.builtin.template:
+        src: core.conf.j2
+        dest: /var/lib/deluged/config/core.conf
+        owner: debian-deluged
+        group: debian-deluged
+        mode: '0644'
+
+    - name: Start deluged
+      ansible.builtin.systemd:
+        name: deluged.service
+        state: started
+
+- name: Check whether Deluge Web configuration would change
+  ansible.builtin.template:
+    src: web.conf.j2
+    dest: /var/lib/deluged/config/web.conf
+    owner: debian-deluged
+    group: debian-deluged
+    mode: '0644'
+  check_mode: true
+  register: deluge_web_config_check
+
+- name: Deploy changed Deluge Web configuration
+  when: deluge_web_config_check.changed
+  block:
+    - name: Stop deluge-web
+      ansible.builtin.systemd:
+        name: deluge-web.service
+        state: stopped
+
+    - name: Deploy Deluge Web configuration
+      ansible.builtin.template:
+        src: web.conf.j2
+        dest: /var/lib/deluged/config/web.conf
+        owner: debian-deluged
+        group: debian-deluged
+        mode: '0644'
+
+    - name: Start deluge-web
+      ansible.builtin.systemd:
+        name: deluge-web.service
+        state: started
