@@ -50,6 +50,32 @@
       - dnsmasq_config_check.rc == 0
     fail_msg: "Pi-hole must have misc.etc_dnsmasq_d = true in /etc/pihole/pihole.toml"
 
+- name: Configure HTTP port
+  ansible.builtin.replace:
+    path: /etc/pihole/pihole.toml
+    after: '^\[webserver\]$'
+    before: '^\['
+    regexp: '^\s*port\s*=.*$'
+    replace: '  port = "8053"'
+  notify: Restart Pi-hole DNS
+
+- name: Verify Pi-hole HTTP port configuration
+  ansible.builtin.command:
+    argv:
+      - grep
+      - -Eq
+      - '^\s*port\s*=\s*"8053"\s*(#.*)?$'
+      - /etc/pihole/pihole.toml
+  register: pihole_http_port_check
+  changed_when: false
+  failed_when: false
+
+- name: Fail if Pi-hole HTTP port is not configured
+  ansible.builtin.assert:
+    that:
+      - pihole_http_port_check.rc == 0
+    fail_msg: "Pi-hole must have webserver.port = \"8053\" in /etc/pihole/pihole.toml"
+
 - name: Deploy local DNS records
   ansible.builtin.template:
     src: local-dns.conf.j2
