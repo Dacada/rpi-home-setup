@@ -1,38 +1,21 @@
-Host geode-lan
-  HostName 192.168.1.41
+Host remote-gateway
+  HostName ssh.{{ dns.suffix }}
+  Port 42420
+
+Host geode-lan geode-wan
+  HostName geode.{{ dns.suffix }}
+
+Host haze-lan haze-wan
+  HostName haze.{{ dns.suffix }}
+
+Host tonic-lan tonic-wan
+  HostName tonic.{{ dns.suffix }}
+
+Host geode-wan haze-wan tonic-wan
+  ProxyJump remote-gateway
+
+Host *-lan *-wan remote-gateway
   User dacada
   IdentityFile ~/.ssh/id_ed25519
   CertificateFile ~/.ssh/id_ed25519-cert.pub
-  Port 22
   IdentitiesOnly yes
-
-Host geode-wan
-  HostName [REDACTED]
-  User dacada
-  IdentityFile ~/.ssh/id_ed25519
-  CertificateFile ~/.ssh/id_ed25519-cert.pub
-  Port [REDACTED]
-  IdentitiesOnly yes
-
-Host haze-lan
-  HostName 192.168.1.103
-  User dacada
-  IdentityFile ~/.ssh/id_ed25519
-  CertificateFile ~/.ssh/id_ed25519-cert.pub
-  Port 22
-  IdentitiesOnly yes
-
-Host haze-wan
-  HostName 192.168.1.103
-  User dacada
-  ProxyJump geode-wan
-
-Host tonic-lan
-  HostName 192.168.1.72
-  User dacada
-  ProxyJump geode-lan
-
-Host tonic-wan
-  HostName 192.168.1.72
-  User dacada
-  ProxyJump geode-wan
