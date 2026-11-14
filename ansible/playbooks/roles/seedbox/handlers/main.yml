@@ -1,24 +1,29 @@
 ---
-- name: Restart deluged completely
-  service:
+- name: Stop deluge-web
+  ansible.builtin.systemd_service:
     name: deluge-web
     state: stopped
+  listen: Restart deluged completely
 
-- name: Restart deluged completely
-  service:
+- name: Stop deluged
+  ansible.builtin.systemd_service:
     name: deluged
     state: stopped
+  listen: Restart deluged completely
 
-- name: Restart deluged completely
-  systemd_service:
+- name: Reload systemd
+  ansible.builtin.systemd_service:
     daemon_reload: true
+  listen: Restart deluged completely
 
-- name: Restart deluged completely
-  service:
+- name: Start deluged
+  ansible.builtin.systemd_service:
     name: deluged
     state: started
+  listen: Restart deluged completely
 
-- name: Restart deluged completely
-  service:
+- name: Start deluge-web
+  ansible.builtin.systemd_service:
     name: deluge-web
     state: started
+  listen: Restart deluged completely
