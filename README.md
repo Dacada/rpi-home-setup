@@ -205,13 +205,13 @@ TCP and UDP ports NATed to haze (the fileserver), check Deluge config for the ex
 Access the Syncthing UI through an SSH tunnel:
 
 ```bash
-ssh -L 8384:localhost:8384 haze
+ssh -L 9090:localhost:8384 haze
 ```
 
 Then open:
 
 ```
-http://localhost:8384
+http://localhost:9090
 ```
 
 ## UI Configuration
