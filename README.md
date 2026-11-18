@@ -238,3 +238,13 @@ The final state should be a single shared folder with all devices participating:
 * laptop
 * phone
 * haze
+
+# Periodic testing
+
+## VPN
+
+- Connect laptop to a remote network (e.g. phone LTE)
+- Connect laptop to VPN
+- Check `ansible/playbooks/roles/reverse_proxy/defaults/main.yml` and test every listed domain from a browser
+
+Periodicity: Once a month.
