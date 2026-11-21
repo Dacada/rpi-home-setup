@@ -1,0 +1,11 @@
+---
+- name: Reload SSH
+  ansible.builtin.service:
+    name: ssh
+    state: reloaded
+
+- name: Restart Git web
+  ansible.builtin.systemd_service:
+    name: git-web.service
+    daemon_reload: true
+    state: restarted

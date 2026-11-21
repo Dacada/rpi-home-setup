@@ -83,4 +83,5 @@
     - gitlab_runner
     - syncthing
     - remote_backups
+    - git
     - reverse_proxy

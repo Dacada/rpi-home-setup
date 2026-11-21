@@ -25,6 +25,12 @@
     groups: syncthing-user
     append: true
 
+- name: Add restic user to git group
+  ansible.builtin.user:
+    name: "{{ restic_user }}"
+    groups: git
+    append: true
+
 - name: Create restic configuration directory
   ansible.builtin.file:
     path: /var/lib/restic

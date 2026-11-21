@@ -1,0 +1,23 @@
+[Unit]
+Description=Git web interface
+After=network.target
+RequiresMountsFor={{ git_home }}
+
+[Service]
+Type=simple
+User=git
+Group=git
+
+RuntimeDirectory=git-web
+RuntimeDirectoryMode=0755
+
+ExecStart=/usr/sbin/lighttpd -D -f /etc/lighttpd/git.conf
+Restart=on-failure
+
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ReadWritePaths=/run/git-web
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,101 @@
+---
+- name: Install Git
+  ansible.builtin.package:
+    name: git
+    state: present
+
+- name: Create git group
+  ansible.builtin.group:
+    name: git
+    gid: 1500
+    system: true
+    state: present
+
+- name: Create git user
+  ansible.builtin.user:
+    name: git
+    uid: 1500
+    group: git
+    home: "{{ git_home }}"
+    create_home: false
+    shell: /usr/bin/git-shell
+    system: true
+    password_lock: true
+    state: present
+
+- name: Authorize existing SSH principal for Git
+  ansible.builtin.copy:
+    dest: /etc/ssh/principals/git
+    content: "dacada\n"
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Configure Git SSH restrictions
+  ansible.builtin.copy:
+    dest: /etc/ssh/sshd_config.d/60-git.conf
+    content: |
+      Match User git
+          PasswordAuthentication no
+          KbdInteractiveAuthentication no
+          PermitTTY no
+          AllowTcpForwarding no
+          AllowAgentForwarding no
+          X11Forwarding no
+    owner: root
+    group: root
+    mode: "0644"
+    validate: /usr/sbin/sshd -t -f %s
+  notify: Reload SSH
+
+# Git web ui
+
+- name: Install cgit
+  ansible.builtin.package:
+    name: cgit
+    state: present
+
+- name: Configure cgit
+  ansible.builtin.template:
+    src: cgitrc.j2
+    dest: /etc/cgitrc
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Git web
+
+- name: Install lighttpd
+  ansible.builtin.package:
+    name: lighttpd
+    state: present
+
+- name: Configure Git lighttpd
+  ansible.builtin.template:
+    src: lighttpd.conf.j2
+    dest: /etc/lighttpd/git.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Git web
+
+- name: Install Git web systemd service
+  ansible.builtin.template:
+    src: git-web.service.j2
+    dest: /etc/systemd/system/git-web.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Git web
+
+- name: Disable default lighttpd service
+  ansible.builtin.systemd_service:
+    name: lighttpd.service
+    enabled: false
+    state: stopped
+
+- name: Enable and start Git web service
+  ansible.builtin.systemd_service:
+    name: git-web.service
+    daemon_reload: true
+    enabled: true
+    state: started

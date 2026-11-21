@@ -9,3 +9,4 @@ reverse_proxy:
     monitor-haze: 8080
     seedbox: 8112
     wealth-tracker: 3000
+    git: 8081

@@ -14,3 +14,4 @@ dns_services:
   pihole-admin: tonic
   seedbox: haze
   wealth-tracker: haze
+  git: haze
