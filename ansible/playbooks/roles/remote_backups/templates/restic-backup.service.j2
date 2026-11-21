@@ -9,4 +9,4 @@ Type=oneshot
 User={{ restic_user }}
 Group={{ restic_group }}
 EnvironmentFile=/var/lib/restic/env
-ExecStart=/usr/bin/restic backup --exclude-if-present={{ restic_exclude_if_present }} {{ restic.backup_paths | join(' ') }}
+ExecStart=/usr/local/sbin/backup.sh

@@ -248,3 +248,12 @@ The final state should be a single shared folder with all devices participating:
 - Check `ansible/playbooks/roles/reverse_proxy/defaults/main.yml` and test every listed domain from a browser
 
 Periodicity: Once a month.
+
+## Backup
+
+Full disaster recovery:
+
+- Find the database URL in the back of the phone case.
+- Verify both files can be accessed and decrypted from an unauthenticated browser session.
+- Roll a new VM in AWS (log in with decrypted credentials)
+- Restore restic database into the VM

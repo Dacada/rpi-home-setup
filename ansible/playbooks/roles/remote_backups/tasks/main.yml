@@ -4,10 +4,26 @@
     name: restic
     state: present
 
+- name: Install age
+  ansible.builtin.package:
+    name: age
+    state: present
+
+- name: Install aws cli
+  ansible.builtin.package:
+    name: awscli
+    state: present
+
 - name: Install ACL support for Ansible privilege escalation
   ansible.builtin.package:
     name: acl
     state: present
+
+- name: Add restic user to syncthing group
+  ansible.builtin.user:
+    name: "{{ restic_user }}"
+    groups: syncthing-user
+    append: true
 
 - name: Create restic configuration directory
   ansible.builtin.file:
@@ -43,6 +59,14 @@
 #   become: true
 #   become_user: "{{ restic_user }}"
 #   when: restic_repository_check.rc != 0
+
+- name: Install restic backup script
+  ansible.builtin.template:
+    src: backup.sh.j2
+    dest: /usr/local/sbin/backup.sh
+    owner: root
+    group: root
+    mode: '0755'
 
 - name: Install restic backup service
   ansible.builtin.template:
