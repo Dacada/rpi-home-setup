@@ -257,3 +257,15 @@ Full disaster recovery:
 - Verify both files can be accessed and decrypted from an unauthenticated browser session.
 - Roll a new VM in AWS (log in with decrypted credentials)
 - Restore restic database into the VM
+
+## Loss of power
+
+Test unplugging the UPS
+
+- Monitor each device in parallel, do they power off?
+
+## Node goes offline
+
+Test powering off a random node
+
+- Monitor each other node's monitoring dashboard. Which alerts do we get?
